@@ -126,8 +126,97 @@ Replace `USERNAME` with the GitHub account or organization that owns the reposit
 - Follow consistent naming and folder organization.
 - Keep client applications independent while consuming shared backend APIs.
 
-## 8. Project Status
 
-This repository establishes the initial monorepo structure for REBOOT.
+## 8    . Local Development Environment
 
-The applications, microservices, automation workflows, and infrastructure will be implemented progressively according to the project sprint plan.
+REBOOT uses Docker Compose to run its local development dependencies.
+
+The local environment includes two independent PostgreSQL databases:
+
+- Identity Service Database
+- Organization Service Database
+
+Each database has its own credentials, Docker network, and persistent volume.
+
+### Prerequisites
+
+- Docker Desktop
+- Docker Compose V2
+- Git
+
+### Environment Configuration
+
+Clone the repository:
+
+```bash
+git clone https://github.com/reboot-ec/reboot
+cd reboot
+```
+
+Create the local environment file:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Update `.env` with secure local passwords.
+
+Do not commit the `.env` file.
+
+### Start the Local Environment
+
+From the repository root, execute:
+
+```powershell
+docker compose --env-file .env -f infrastructure/docker/compose.yml up -d
+```
+
+### Check Container Status
+
+```powershell
+docker compose --env-file .env -f infrastructure/docker/compose.yml ps
+```
+
+Both PostgreSQL containers should become healthy.
+
+### View Logs
+
+```powershell
+docker compose --env-file .env -f infrastructure/docker/compose.yml logs -f
+```
+
+### Stop the Local Environment
+
+```powershell
+docker compose --env-file .env -f infrastructure/docker/compose.yml down
+```
+
+Stopping the environment does not delete persistent database volumes.
+
+### Restart the Local Environment
+
+```powershell
+docker compose --env-file .env -f infrastructure/docker/compose.yml up -d
+```
+
+Existing database data will be preserved.
+
+### Database Connectivity
+
+Identity Service connects to its database using:
+
+- Host: identity-db
+- Port: 5432
+- Database: identity_db
+- Network: reboot-identity-network
+
+Organization Service connects to its database using:
+
+- Host: organization-db
+- Port: 5432
+- Database: organization_db
+- Network: reboot-organization-network
+
+Database credentials must be obtained from the corresponding environment variables.
+
+Each microservice must connect only to its own database.

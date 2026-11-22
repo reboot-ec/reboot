@@ -1,0 +1,88 @@
+
+name: reboot-local
+
+services:
+
+  # ========================================
+  # IDENTITY SERVICE DATABASE
+  # ========================================
+
+  identity-db:
+    image: postgres:16-alpine
+    container_name: reboot-identity-db
+
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: ${IDENTITY_DB_NAME:?Identity database name is required}
+      POSTGRES_USER: ${IDENTITY_DB_USER:?Identity database user is required}
+      POSTGRES_PASSWORD: ${IDENTITY_DB_PASSWORD:?Identity database password is required}
+
+    volumes:
+      - identity_data:/var/lib/postgresql/data
+
+    networks:
+      - identity-network
+
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ========================================
+  # ORGANIZATION SERVICE DATABASE
+  # ========================================
+
+  organization-db:
+    image: postgres:16-alpine
+    container_name: reboot-organization-db
+
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: ${ORGANIZATION_DB_NAME:?Organization database name is required}
+      POSTGRES_USER: ${ORGANIZATION_DB_USER:?Organization database user is required}
+      POSTGRES_PASSWORD: ${ORGANIZATION_DB_PASSWORD:?Organization database password is required}
+
+    volumes:
+      - organization_data:/var/lib/postgresql/data
+
+    networks:
+      - organization-network
+
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+# ==========================================
+# PERSISTENT DATABASE STORAGE
+# ==========================================
+
+volumes:
+  identity_data:
+    name: reboot-identity-data
+
+  organization_data:
+    name: reboot-organization-data
+
+# ==========================================
+# ISOLATED NETWORKS
+# ==========================================
+
+networks:
+  identity-network:
+    name: reboot-identity-network
+    internal: true
+
+  organization-network:
+    name: reboot-organization-network
+    internal: true
