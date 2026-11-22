@@ -76,3 +76,8 @@ variable "organization_db_password" {
   type        = string
   sensitive   = true
 }
+
+variable "public_subnet_cidrs" {
+  description = "Public subnet CIDR blocks."
+  type        = list(string)
+}

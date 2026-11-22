@@ -5,9 +5,9 @@ aws_region = "us-east-1"
 
 vpc_cidr = "10.40.0.0/16"
 
-private_subnet_cidrs = [
-  "10.40.1.0/24",
-  "10.40.2.0/24"
+public_subnet_cidrs = [
+  "10.40.101.0/24",
+  "10.40.102.0/24"
 ]
 
 availability_zones = [
