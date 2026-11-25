@@ -96,6 +96,8 @@ override.tf.json
 *_override.tf.json
 .terraformrc
 terraform.rc
+tfplan
+*.tfvars
 
 # Keep Terraform dependency lock files under version control.
 

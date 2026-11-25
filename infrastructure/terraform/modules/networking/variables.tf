@@ -14,13 +14,23 @@ variable "vpc_cidr" {
   type        = string
 }
 
+variable "public_subnet_cidrs" {
+  description = "CIDR blocks for public subnets."
+  type        = list(string)
+
+  validation {
+    condition     = length(var.public_subnet_cidrs) == length(var.availability_zones)
+    error_message = "The number of public subnet CIDRs must match the number of availability zones."
+  }
+}
+
 variable "private_subnet_cidrs" {
   description = "CIDR blocks for private subnets."
   type        = list(string)
 }
 
 variable "availability_zones" {
-  description = "AWS availability zones for private subnets."
+  description = "AWS availability zones for subnets."
   type        = list(string)
 
   validation {
