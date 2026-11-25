@@ -77,6 +77,18 @@ variable "organization_db_password" {
   sensitive   = true
 }
 
+variable "directory_name" {
+  description = "Fully qualified domain name for Active Directory."
+  type        = string
+  default     = "reboot.local"
+}
+
+variable "directory_password" {
+  description = "Administrator password for Active Directory."
+  type        = string
+  sensitive   = true
+}
+
 variable "public_subnet_cidrs" {
   description = "Public subnet CIDR blocks."
   type        = list(string)

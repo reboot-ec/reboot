@@ -24,3 +24,5 @@ backup_retention_period = 14
 multi_az            = true
 deletion_protection = true
 skip_final_snapshot = false
+directory_name     = "reboot.prod.local"
+directory_password = "ChangeMeProd123!"

@@ -110,6 +110,20 @@ resource "aws_security_group" "organization_service" {
 }
 
 # IDENTITY DATABASE
+# ACTIVE DIRECTORY
+
+module "active_directory" {
+  source = "../../modules/active-directory"
+
+  project_name       = var.project_name
+  environment        = var.environment
+  vpc_id             = module.networking.vpc_id
+  subnet_ids         = module.networking.private_subnet_ids
+  vpc_cidr           = var.vpc_cidr
+  directory_name     = var.directory_name
+  directory_password = var.directory_password
+}
+
 
 module "identity_database" {
   source = "../../modules/database"

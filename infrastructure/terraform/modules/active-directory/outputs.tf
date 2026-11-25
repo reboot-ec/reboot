@@ -10,5 +10,5 @@ output "dns_ip_addresses" {
 
 output "ldap_url" {
   description = "LDAP connection URL using the first DNS IP address."
-  value       = "ldap://${aws_directory_service_directory.main.dns_ip_addresses[0]}:389"
+  value       = "ldap://${tolist(aws_directory_service_directory.main.dns_ip_addresses)[0]}:389"
 }
