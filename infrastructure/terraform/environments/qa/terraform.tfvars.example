@@ -24,3 +24,5 @@ backup_retention_period = 7
 multi_az            = false
 deletion_protection = true
 skip_final_snapshot = false
+directory_name     = "reboot.qa.local"
+directory_password = "ChangeMe123!"
