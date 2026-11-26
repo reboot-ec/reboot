@@ -4,6 +4,7 @@ import com.reboot.identity.model.User;
 import com.reboot.identity.repository.UserRepository;
 import com.reboot.identity.service.JwtService;
 import io.jsonwebtoken.Claims;
+import lombok.extern.slf4j.Slf4j;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
@@ -54,7 +56,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         List<String> roles = claims.get("roles", List.class);
                         if (roles != null) {
                             for (String role : roles) {
-                                authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+                                String authority = role.startsWith("ROLE_") ? role : "ROLE_" + role;
+                                authorities.add(new SimpleGrantedAuthority(authority));
                             }
                         }
 
@@ -75,7 +78,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception e) {
-            logger.error("Cannot set user authentication: {}", e);
+            log.warn("JWT authentication could not be established: requestId={}",
+                    org.slf4j.MDC.get("requestId"));
         }
 
         filterChain.doFilter(request, response);

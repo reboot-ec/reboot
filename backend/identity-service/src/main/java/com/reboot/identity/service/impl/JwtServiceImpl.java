@@ -108,7 +108,7 @@ public class JwtServiceImpl implements JwtService {
             Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            log.warn("Invalid or expired JWT token encountered: {}", e.getMessage());
+            log.warn("Invalid or expired JWT token encountered.");
             return false;
         }
     }
@@ -118,7 +118,7 @@ public class JwtServiceImpl implements JwtService {
         try {
             return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
         } catch (JwtException | IllegalArgumentException e) {
-            log.warn("Failed to parse claims from JWT token: {}", e.getMessage());
+            log.warn("Failed to parse claims from JWT token.");
             throw e;
         }
     }

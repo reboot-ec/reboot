@@ -1,12 +1,6 @@
 package com.reboot.identity.service.impl;
 
-import com.reboot.identity.model.AdGroupRoleMapping;
-import com.reboot.identity.model.AuthProvider;
-import com.reboot.identity.model.Role;
 import com.reboot.identity.model.User;
-import com.reboot.identity.repository.AdGroupRoleMappingRepository;
-import com.reboot.identity.repository.RoleRepository;
-import com.reboot.identity.repository.UserRepository;
 import com.reboot.identity.service.DirectoryAuthenticator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,10 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 @Slf4j
 @Service
@@ -45,16 +36,10 @@ public class ActiveDirectoryLdapsAuthenticator implements DirectoryAuthenticator
     @Value("${ad.bind-password}")
     private String bindPassword;
 
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final AdGroupRoleMappingRepository adGroupRoleMappingRepository;
+    private final ActiveDirectoryUserSynchronizer userSynchronizer;
 
-    public ActiveDirectoryLdapsAuthenticator(UserRepository userRepository,
-                                             RoleRepository roleRepository,
-                                             AdGroupRoleMappingRepository adGroupRoleMappingRepository) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.adGroupRoleMappingRepository = adGroupRoleMappingRepository;
+    public ActiveDirectoryLdapsAuthenticator(ActiveDirectoryUserSynchronizer userSynchronizer) {
+        this.userSynchronizer = userSynchronizer;
     }
 
     private LdapTemplate createLdapTemplate(String userDn, String password) {
@@ -127,40 +112,8 @@ public class ActiveDirectoryLdapsAuthenticator implements DirectoryAuthenticator
             displayName = userContext.getStringAttribute("cn");
         }
         String username = userContext.getStringAttribute("sAMAccountName");
-
-        if (!StringUtils.hasText(email) || !StringUtils.hasText(displayName) || !StringUtils.hasText(username)) {
-            throw new IllegalStateException("Active Directory user is missing required profile attributes.");
-        }
-
-        String[] memberOf = userContext.getStringAttributes("memberOf");
-        Set<Role> assignedRoles = new HashSet<>();
-        if (memberOf != null) {
-            for (String groupDn : memberOf) {
-                Optional<AdGroupRoleMapping> mapping =
-                        adGroupRoleMappingRepository.findByAdGroupDn(groupDn);
-                mapping.map(AdGroupRoleMapping::getRole).ifPresent(assignedRoles::add);
-            }
-        }
-
-        if (assignedRoles.isEmpty()) {
-            roleRepository.findByName("USER")
-                    .or(() -> roleRepository.findByName("ROLE_USER"))
-                    .ifPresent(assignedRoles::add);
-        }
-
-        Optional<User> existingUser = userRepository.findByUsername(username)
-                .or(() -> userRepository.findByEmail(email));
-        User user = existingUser.orElseGet(User::new);
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setFullName(displayName);
-        user.setAuthProvider(AuthProvider.ACTIVE_DIRECTORY);
-        user.setPasswordHash(null);
-        user.setRoles(assignedRoles);
-
-        User savedUser = userRepository.save(user);
-        log.info("Synchronized Active Directory profile and group mappings for user [{}].", username);
-        return savedUser;
+        return userSynchronizer.synchronize(
+                email, displayName, username, userContext.getStringAttributes("memberOf"));
     }
 
     @Override

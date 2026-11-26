@@ -4,6 +4,19 @@ server:
 spring:
   application:
     name: identity-service
+  mvc:
+    throw-exception-if-no-handler-found: true
+  mail:
+    host: ${SMTP_HOST:localhost}
+    port: ${SMTP_PORT:587}
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${SMTP_AUTH:false}
+          starttls:
+            enable: ${SMTP_STARTTLS:true}
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/identity_db}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
@@ -32,6 +45,13 @@ jwt:
   secret: ${JWT_SECRET:9a4f2c8d3b7a1e6f5c8a9b0c3d2e1f4a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e}
   access-expiration-ms: ${JWT_ACCESS_EXPIRATION_MS:900000}
   refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:604800000}
+
+app:
+  password-reset:
+    expiration-ms: ${PASSWORD_RESET_EXPIRATION_MS:1800000}
+    url: ${PASSWORD_RESET_URL:http://localhost:3000/reset-password}
+  mail:
+    from: ${SMTP_FROM:no-reply@reboot.local}
 
 ad:
   enabled: ${AD_ENABLED:false}
