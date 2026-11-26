@@ -1,0 +1,44 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: identity-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/identity_db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+jwt:
+  secret: ${JWT_SECRET:9a4f2c8d3b7a1e6f5c8a9b0c3d2e1f4a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e}
+  access-expiration-ms: ${JWT_ACCESS_EXPIRATION_MS:900000}
+  refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:604800000}
+
+ad:
+  enabled: ${AD_ENABLED:false}
+  ldap:
+    url: ${AD_LDAP_URL:ldap://localhost:389}
+  base-dn: ${AD_BASE_DN:dc=reboot,dc=com}
+  bind-dn: ${AD_BIND_DN:cn=admin,dc=reboot,dc=com}
+  bind-password: ${AD_BIND_PASSWORD:admin}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
