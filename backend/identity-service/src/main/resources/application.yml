@@ -36,7 +36,7 @@ jwt:
 ad:
   enabled: ${AD_ENABLED:false}
   ldap:
-    url: ${AD_LDAP_URL:ldap://localhost:389}
+    url: ${AD_LDAP_URL:ldaps://localhost:636}
   base-dn: ${AD_BASE_DN:dc=reboot,dc=com}
   bind-dn: ${AD_BIND_DN:cn=admin,dc=reboot,dc=com}
   bind-password: ${AD_BIND_PASSWORD:admin}
