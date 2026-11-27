@@ -21,6 +21,7 @@ output "security_group_id" {
 output "secret_arn" {
   description = "AWS Secrets Manager secret ARN containing database credentials."
   value       = aws_secretsmanager_secret.database.arn
+  depends_on  = [aws_secretsmanager_secret_version.database]
 }
 
 output "secret_name" {

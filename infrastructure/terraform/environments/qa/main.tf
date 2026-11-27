@@ -233,7 +233,8 @@ module "identity_database" {
   subnet_ids = module.networking.private_subnet_ids
 
   allowed_security_group_ids = [
-    aws_security_group.identity_service.id
+    aws_security_group.identity_service.id,
+    module.ecs_services.ecs_tasks_security_group_id
   ]
 }
 
@@ -261,6 +262,74 @@ module "organization_database" {
   subnet_ids = module.networking.private_subnet_ids
 
   allowed_security_group_ids = [
-    aws_security_group.organization_service.id
+    aws_security_group.organization_service.id,
+    module.ecs_services.ecs_tasks_security_group_id
   ]
+}
+
+resource "aws_secretsmanager_secret" "jwt" {
+  name = "${var.project_name}-${var.environment}-jwt-secret"
+
+  tags = {
+    Name        = "${var.project_name}-${var.environment}-jwt-secret"
+    Environment = var.environment
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "jwt" {
+  secret_id     = aws_secretsmanager_secret.jwt.id
+  secret_string = var.jwt_secret
+}
+
+resource "aws_secretsmanager_secret" "ad_bind_password" {
+  name = "${var.project_name}-${var.environment}-ad-bind-password"
+
+  tags = {
+    Name        = "${var.project_name}-${var.environment}-ad-bind-password"
+    Environment = var.environment
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "ad_bind_password" {
+  secret_id     = aws_secretsmanager_secret.ad_bind_password.id
+  secret_string = var.directory_password
+}
+
+module "ecs_services" {
+  source = "../../modules/ecs-services"
+
+  project_name                  = var.project_name
+  environment                   = var.environment
+  aws_region                    = var.aws_region
+  vpc_id                        = module.networking.vpc_id
+  vpc_cidr                      = module.networking.vpc_cidr
+  private_subnet_ids            = module.networking.private_subnet_ids
+  alb_security_group_id         = module.alb.alb_security_group_id
+  identity_target_group_arn     = module.alb.identity_target_group_arn
+  organization_target_group_arn = module.alb.organization_target_group_arn
+
+  task_execution_role_arn = var.task_execution_role_arn
+  task_role_arn           = var.task_execution_role_arn
+
+  identity_image_tag     = var.identity_image_tag
+  organization_image_tag = var.organization_image_tag
+
+  identity_datasource_url      = "jdbc:postgresql://${module.identity_database.endpoint}:5432/identity_db"
+  identity_datasource_username = "identity_admin"
+  identity_db_secret_arn       = module.identity_database.secret_arn
+
+  organization_datasource_url      = "jdbc:postgresql://${module.organization_database.endpoint}:5432/organization_db"
+  organization_datasource_username = "organization_admin"
+  organization_db_secret_arn       = module.organization_database.secret_arn
+
+  jwt_secret_arn              = aws_secretsmanager_secret_version.jwt.secret_arn
+  ad_bind_password_secret_arn = aws_secretsmanager_secret_version.ad_bind_password.secret_arn
+
+  ad_enabled  = true
+  ad_ldap_url = module.active_directory.ldap_url
+  ad_base_dn = join(",", [
+    for label in split(".", var.directory_name) : "DC=${label}"
+  ])
+  ad_bind_dn           = "CN=Administrator,CN=Users,${join(",", [for label in split(".", var.directory_name) : "DC=${label}"])}"
+  cors_allowed_origins = var.cors_allowed_origins
 }

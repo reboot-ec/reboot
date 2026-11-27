@@ -56,3 +56,18 @@ output "organization_target_group_arn" {
   description = "ARN of the Organization service target group for container registration."
   value       = module.alb.organization_target_group_arn
 }
+
+output "ecs_cluster_name" {
+  description = "Name of the ECS cluster."
+  value       = module.ecs_services.ecs_cluster_name
+}
+
+output "identity_ecr_repository_url" {
+  description = "URL of the Identity ECR repository."
+  value       = module.ecs_services.identity_ecr_repository_url
+}
+
+output "organization_ecr_repository_url" {
+  description = "URL of the Organization ECR repository."
+  value       = module.ecs_services.organization_ecr_repository_url
+}

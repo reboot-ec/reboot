@@ -10,10 +10,18 @@ public_subnet_cidrs = [
   "10.30.102.0/24"
 ]
 
+private_subnet_cidrs = [
+  "10.30.1.0/24",
+  "10.30.2.0/24"
+]
+
 availability_zones = [
   "us-east-1a",
   "us-east-1b"
 ]
+
+identity_db_password     = "REPLACE_WITH_STRONG_IDENTITY_DB_PASSWORD"
+organization_db_password = "REPLACE_WITH_STRONG_ORGANIZATION_DB_PASSWORD"
 
 db_instance_class        = "db.t4g.small"
 db_allocated_storage      = 30
@@ -25,7 +33,16 @@ multi_az            = false
 deletion_protection = true
 skip_final_snapshot = false
 directory_name     = "reboot.qa.local"
-directory_password = "ChangeMe123!"
+directory_password = "REPLACE_WITH_STRONG_DIRECTORY_PASSWORD"
+
+# Use the AWS Academy LabRole ARN for ECS execution and task permissions.
+task_execution_role_arn = "arn:aws:iam::123456789012:role/LabRole"
+
+# Override either tag with a fixed release, for example "v1.0.0".
+identity_image_tag     = "qa"
+organization_image_tag = "qa"
+
+jwt_secret = "REPLACE_WITH_A_LONG_RANDOM_JWT_SECRET"
 
 cors_allowed_origins = [
   "https://web.example.com",
