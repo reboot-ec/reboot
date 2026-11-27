@@ -1,6 +1,7 @@
 package com.reboot.organization.repository;
 
 import com.reboot.organization.model.OrganizationMembership;
+import com.reboot.organization.model.MembershipRole;
 import com.reboot.organization.model.MembershipStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -18,8 +19,16 @@ public interface OrganizationMembershipRepository extends JpaRepository<Organiza
 
     Optional<OrganizationMembership> findByOrganizationIdAndUserId(UUID organizationId, UUID userId);
 
+    Optional<OrganizationMembership> findByOrganizationIdAndId(UUID organizationId, UUID id);
+
     List<OrganizationMembership> findByOrganizationIdAndStatus(
         UUID organizationId,
+        MembershipStatus status
+    );
+
+    long countByOrganizationIdAndRoleAndStatus(
+        UUID organizationId,
+        MembershipRole role,
         MembershipStatus status
     );
 }
