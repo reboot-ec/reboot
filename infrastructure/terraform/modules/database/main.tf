@@ -85,12 +85,12 @@ resource "aws_secretsmanager_secret" "database" {
 resource "aws_secretsmanager_secret_version" "database" {
   secret_id = aws_secretsmanager_secret.database.id
   secret_string = jsonencode({
-    engine   = "postgres"
-    host     = aws_db_instance.main.address
-    port     = aws_db_instance.main.port
-    username = var.master_username
-    password = var.master_password
-    dbname   = var.database_name
+    engine               = "postgres"
+    host                 = aws_db_instance.main.address
+    port                 = aws_db_instance.main.port
+    username             = var.master_username
+    password             = var.master_password
+    dbname               = var.database_name
     dbInstanceIdentifier = aws_db_instance.main.identifier
   })
 }

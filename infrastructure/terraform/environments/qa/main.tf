@@ -9,6 +9,16 @@ module "networking" {
   availability_zones   = var.availability_zones
 }
 
+module "api_gateway" {
+  source = "../../modules/api-gateway"
+
+  project_name       = var.project_name
+  environment        = var.environment
+  vpc_id             = module.networking.vpc_id
+  private_subnet_ids = module.networking.private_subnet_ids
+  allow_origins      = var.cors_allowed_origins
+}
+
 # LOAD BALANCER SECURITY GROUP
 
 resource "aws_security_group" "load_balancer" {
