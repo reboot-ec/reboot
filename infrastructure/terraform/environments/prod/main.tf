@@ -9,14 +9,90 @@ module "networking" {
   availability_zones   = var.availability_zones
 }
 
+moved {
+  from = module.api_gateway.aws_security_group.vpc_link
+  to   = aws_security_group.vpc_link
+}
+
+moved {
+  from = module.api_gateway.aws_security_group.internal_alb
+  to   = module.alb.aws_security_group.internal_alb
+}
+
+moved {
+  from = module.api_gateway.aws_vpc_security_group_ingress_rule.alb_from_vpc_link
+  to   = module.alb.aws_vpc_security_group_ingress_rule.from_vpc_link
+}
+
+moved {
+  from = module.api_gateway.aws_lb.internal
+  to   = module.alb.aws_lb.internal
+}
+
+moved {
+  from = module.api_gateway.aws_lb_target_group.identity_tg
+  to   = module.alb.aws_lb_target_group.identity
+}
+
+moved {
+  from = module.api_gateway.aws_lb_target_group.organization_tg
+  to   = module.alb.aws_lb_target_group.organization
+}
+
+moved {
+  from = module.api_gateway.aws_lb_listener.http
+  to   = module.alb.aws_lb_listener.http
+}
+
+moved {
+  from = module.api_gateway.aws_lb_listener_rule.identity
+  to   = module.alb.aws_lb_listener_rule.identity
+}
+
+moved {
+  from = module.api_gateway.aws_lb_listener_rule.organizations
+  to   = module.alb.aws_lb_listener_rule.organizations
+}
+
+resource "aws_security_group" "vpc_link" {
+  name        = "${var.project_name}-${var.environment}-vpc-link-sg"
+  description = "Security group for the API Gateway VPC Link."
+  vpc_id      = module.networking.vpc_id
+  ingress     = []
+  egress      = []
+
+  tags = {
+    Name        = "${var.project_name}-${var.environment}-vpc-link-sg"
+    Environment = var.environment
+  }
+}
+
+module "alb" {
+  source = "../../modules/alb"
+
+  project_name               = var.project_name
+  environment                = var.environment
+  vpc_id                     = module.networking.vpc_id
+  vpc_cidr                   = module.networking.vpc_cidr
+  private_subnet_ids         = module.networking.private_subnet_ids
+  vpc_link_security_group_id = aws_security_group.vpc_link.id
+}
+
+moved {
+  from = aws_vpc_security_group_egress_rule.vpc_link_to_alb
+  to   = module.api_gateway.aws_vpc_security_group_egress_rule.vpc_link_to_alb
+}
+
 module "api_gateway" {
   source = "../../modules/api-gateway"
 
-  project_name       = var.project_name
-  environment        = var.environment
-  vpc_id             = module.networking.vpc_id
-  private_subnet_ids = module.networking.private_subnet_ids
-  allow_origins      = var.cors_allowed_origins
+  project_name               = var.project_name
+  environment                = var.environment
+  private_subnet_ids         = module.networking.private_subnet_ids
+  vpc_link_security_group_id = aws_security_group.vpc_link.id
+  alb_security_group_id      = module.alb.alb_security_group_id
+  alb_listener_arn           = module.alb.http_listener_arn
+  allow_origins              = var.cors_allowed_origins
 }
 
 # LOAD BALANCER SECURITY GROUP
