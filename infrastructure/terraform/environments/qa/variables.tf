@@ -103,3 +103,26 @@ variable "cors_allowed_origins" {
     error_message = "At least one CORS origin must be configured."
   }
 }
+
+variable "task_execution_role_arn" {
+  description = "Existing ECS task execution and task role ARN, such as the AWS Academy LabRole."
+  type        = string
+}
+
+variable "identity_image_tag" {
+  description = "Identity image tag to deploy in QA."
+  type        = string
+  default     = "qa"
+}
+
+variable "organization_image_tag" {
+  description = "Organization image tag to deploy in QA."
+  type        = string
+  default     = "qa"
+}
+
+variable "jwt_secret" {
+  description = "JWT signing secret stored in AWS Secrets Manager."
+  type        = string
+  sensitive   = true
+}
