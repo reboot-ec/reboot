@@ -1,14 +1,11 @@
-FROM eclipse-temurin:17-jdk-alpine AS build
+FROM maven:3.9.6-eclipse-temurin-17-alpine AS build
 
 WORKDIR /workspace
 
-COPY .mvn/wrapper/ .mvn/wrapper/
-COPY mvnw ./mvnw
 COPY backend/identity-service/pom.xml backend/identity-service/pom.xml
 COPY backend/identity-service/src/main/ backend/identity-service/src/main/
 
-RUN chmod +x ./mvnw \
-    && ./mvnw -B -f backend/identity-service/pom.xml -DskipTests package
+RUN mvn -B -f backend/identity-service/pom.xml -DskipTests package
 
 FROM eclipse-temurin:17-jre-alpine
 
