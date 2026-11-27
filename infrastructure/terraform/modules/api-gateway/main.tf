@@ -9,10 +9,21 @@ terraform {
   }
 }
 
+resource "aws_vpc_security_group_egress_rule" "vpc_link_to_alb" {
+  security_group_id            = var.vpc_link_security_group_id
+  referenced_security_group_id = var.alb_security_group_id
+  from_port                    = 80
+  to_port                      = 80
+  ip_protocol                  = "tcp"
+  description                  = "Allow HTTP traffic to the internal ALB."
+}
+
 resource "aws_apigatewayv2_vpc_link" "main" {
   name               = "${var.project_name}-${var.environment}-vpc-link"
   subnet_ids         = var.private_subnet_ids
   security_group_ids = [var.vpc_link_security_group_id]
+
+  depends_on = [aws_vpc_security_group_egress_rule.vpc_link_to_alb]
 
   tags = {
     Name        = "${var.project_name}-${var.environment}-vpc-link"
@@ -46,7 +57,7 @@ resource "aws_apigatewayv2_integration" "alb" {
   api_id                 = aws_apigatewayv2_api.http.id
   integration_type       = "HTTP_PROXY"
   integration_method     = "ANY"
-  integration_uri        = var.http_listener_arn
+  integration_uri        = var.alb_listener_arn
   connection_type        = "VPC_LINK"
   connection_id          = aws_apigatewayv2_vpc_link.main.id
   payload_format_version = "1.0"

@@ -24,7 +24,12 @@ variable "vpc_link_security_group_id" {
   type        = string
 }
 
-variable "http_listener_arn" {
+variable "alb_security_group_id" {
+  description = "Security group ID attached to the internal ALB."
+  type        = string
+}
+
+variable "alb_listener_arn" {
   description = "ARN of the internal ALB HTTP listener used by the API integration."
   type        = string
 }

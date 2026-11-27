@@ -74,7 +74,8 @@ mechanism—service authentication and authorization must still be enforced.
 | `environment` | `string` | Yes | None | Deployment environment name, such as `qa` or `prod`. |
 | `private_subnet_ids` | `list(string)` | Yes | At least two IDs | Private subnets for the VPC Link. |
 | `vpc_link_security_group_id` | `string` | Yes | None | Security group attached to the API Gateway VPC Link. |
-| `http_listener_arn` | `string` | Yes | None | HTTP listener ARN exported by the ALB module. |
+| `alb_security_group_id` | `string` | Yes | None | Security group attached to the internal ALB. |
+| `alb_listener_arn` | `string` | Yes | None | HTTP listener ARN exported by the ALB module. |
 | `allow_origins` | `list(string)` | Yes | At least one origin | Origins allowed by the HTTP API CORS configuration. |
 
 ## Outputs

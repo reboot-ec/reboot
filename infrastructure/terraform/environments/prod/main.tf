@@ -15,11 +15,6 @@ moved {
 }
 
 moved {
-  from = module.api_gateway.aws_vpc_security_group_egress_rule.vpc_link_to_alb
-  to   = aws_vpc_security_group_egress_rule.vpc_link_to_alb
-}
-
-moved {
   from = module.api_gateway.aws_security_group.internal_alb
   to   = module.alb.aws_security_group.internal_alb
 }
@@ -83,13 +78,9 @@ module "alb" {
   vpc_link_security_group_id = aws_security_group.vpc_link.id
 }
 
-resource "aws_vpc_security_group_egress_rule" "vpc_link_to_alb" {
-  security_group_id            = aws_security_group.vpc_link.id
-  referenced_security_group_id = module.alb.alb_security_group_id
-  from_port                    = 80
-  to_port                      = 80
-  ip_protocol                  = "tcp"
-  description                  = "Allow HTTP traffic to the internal ALB."
+moved {
+  from = aws_vpc_security_group_egress_rule.vpc_link_to_alb
+  to   = module.api_gateway.aws_vpc_security_group_egress_rule.vpc_link_to_alb
 }
 
 module "api_gateway" {
@@ -99,10 +90,9 @@ module "api_gateway" {
   environment                = var.environment
   private_subnet_ids         = module.networking.private_subnet_ids
   vpc_link_security_group_id = aws_security_group.vpc_link.id
-  http_listener_arn          = module.alb.http_listener_arn
+  alb_security_group_id      = module.alb.alb_security_group_id
+  alb_listener_arn           = module.alb.http_listener_arn
   allow_origins              = var.cors_allowed_origins
-
-  depends_on = [aws_vpc_security_group_egress_rule.vpc_link_to_alb]
 }
 
 # LOAD BALANCER SECURITY GROUP

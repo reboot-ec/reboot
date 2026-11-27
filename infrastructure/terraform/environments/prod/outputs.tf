@@ -42,6 +42,11 @@ output "api_gateway_invoke_url" {
   value       = module.api_gateway.api_endpoint
 }
 
+output "internal_alb_dns_name" {
+  description = "DNS name of the internal application load balancer."
+  value       = module.alb.alb_dns_name
+}
+
 output "identity_target_group_arn" {
   description = "ARN of the Identity service target group for container registration."
   value       = module.alb.identity_target_group_arn
