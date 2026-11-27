@@ -44,10 +44,10 @@ output "api_gateway_invoke_url" {
 
 output "identity_target_group_arn" {
   description = "ARN of the Identity service target group for container registration."
-  value       = module.api_gateway.identity_target_group_arn
+  value       = module.alb.identity_target_group_arn
 }
 
 output "organization_target_group_arn" {
   description = "ARN of the Organization service target group for container registration."
-  value       = module.api_gateway.organization_target_group_arn
+  value       = module.alb.organization_target_group_arn
 }
