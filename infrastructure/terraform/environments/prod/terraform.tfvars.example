@@ -26,3 +26,9 @@ deletion_protection = true
 skip_final_snapshot = false
 directory_name     = "reboot.prod.local"
 directory_password = "ChangeMeProd123!"
+
+cors_allowed_origins = [
+  "https://web.example.com",
+  "https://desktop.example.com",
+  "https://mobile.example.com"
+]

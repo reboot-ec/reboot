@@ -93,3 +93,13 @@ variable "public_subnet_cidrs" {
   description = "Public subnet CIDR blocks."
   type        = list(string)
 }
+
+variable "cors_allowed_origins" {
+  description = "Origins allowed by the API Gateway CORS configuration."
+  type        = list(string)
+
+  validation {
+    condition     = length(var.cors_allowed_origins) > 0
+    error_message = "At least one CORS origin must be configured."
+  }
+}
