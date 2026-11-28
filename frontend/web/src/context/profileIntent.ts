@@ -1,4 +1,10 @@
 export type ProfileIntent = 'citizen' | 'representative';
+export type ProfileType = 'CITIZEN' | 'ORG_REPRESENTATIVE';
+
+export function getProfileType(userId: string, registration?: { userId: string; intent: ProfileIntent }): ProfileType {
+  const intent = registration?.userId === userId ? registration.intent : getProfileIntent(userId);
+  return intent === 'representative' ? 'ORG_REPRESENTATIVE' : 'CITIZEN';
+}
 
 export function saveProfileIntent(userId: string, intent: ProfileIntent) {
   try {

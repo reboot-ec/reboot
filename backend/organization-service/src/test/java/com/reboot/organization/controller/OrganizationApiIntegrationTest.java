@@ -49,10 +49,9 @@ class OrganizationApiIntegrationTest {
 
     @Test
     void filtersDirectoryByAnySelectedType() throws Exception {
-        String authorization = bearer(token(UUID.randomUUID()));
         for (String type : List.of("NGO", "INSTITUTION", "REPAIR_SHOP")) {
             mockMvc.perform(post("/api/v1/organizations")
-                            .header("Authorization", authorization)
+                            .header("Authorization", bearer(token(UUID.randomUUID())))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(Map.of(
                                     "name", "Directory filter " + type, "organizationType", type))))
@@ -96,6 +95,14 @@ class OrganizationApiIntegrationTest {
                 .andReturn();
         JsonNode created = objectMapper.readTree(createResult.getResponse().getContentAsString());
         String organizationId = created.path("data").path("id").asText();
+
+        mockMvc.perform(post("/api/v1/organizations")
+                        .header("Authorization", bearer(ownerToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(Map.of(
+                                "name", "Second organization", "organizationType", "NGO"))))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error.code").value("ORGANIZATION_ALREADY_ASSOCIATED"));
 
         mockMvc.perform(get("/api/v1/organizations/mine"))
                 .andExpect(status().isUnauthorized());

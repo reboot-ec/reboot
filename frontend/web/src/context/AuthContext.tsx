@@ -1,13 +1,21 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { AuthTokens, LoginCredentials, User } from '@reboot/shared-types';
+import { organizationService } from '@reboot/api-client';
+import { getProfileType } from './profileIntent';
+import type { ProfileIntent, ProfileType } from './profileIntent';
 import { api, identity } from './api';
 
 interface AuthContextValue {
   user: User | null;
   loading: boolean;
   sessionError: unknown;
-  login: (credentials: LoginCredentials) => Promise<User>;
+  login: (credentials: LoginCredentials, registration?: { userId: string; intent: ProfileIntent }) => Promise<void>;
+  profileType: ProfileType | null;
+  organizationId: string | null;
+  organizationPending: boolean;
+  organizationError: unknown;
+  refreshOrganization: () => void;
   logout: () => Promise<void>;
   request: typeof api.request;
 }
@@ -46,12 +54,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [initialSession] = useState(readSession);
   const [session, setSession] = useState(initialSession);
   const [user, setUser] = useState<User | null>(null);
+  const [profileType, setProfileType] = useState<ProfileType | null>(null);
+  const [organizationVersion, setOrganizationVersion] = useState(0);
+  const [organization, setOrganization] = useState<{ userId: string; version: number; id: string | null; error?: unknown }>();
   const [loading, setLoading] = useState(Boolean(initialSession));
   const [sessionError, setSessionError] = useState<unknown>(null);
 
   const syncSession = useCallback(() => {
     const tokens = api.getTokens();
-    if (!tokens) setUser(null);
+    if (!tokens) {
+      setUser(null);
+      setProfileType(null);
+    }
     setSession(current => {
       if (current?.tokens === tokens || (!current && !tokens)) return current;
       return tokens ? { tokens, expiresAt: Date.now() + tokens.expiresIn * 1000 } : null;
@@ -65,7 +79,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     identity.me(controller.signal).then(
       profile => {
-        if (!controller.signal.aborted) setUser(profile);
+        if (!controller.signal.aborted) {
+          setUser(profile);
+          setProfileType(getProfileType(profile.id));
+        }
       },
       error => {
         if (controller.signal.aborted) return;
@@ -109,13 +126,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [session, user, loading, syncSession]);
 
-  async function login(credentials: LoginCredentials) {
+  async function login(credentials: LoginCredentials, registration?: { userId: string; intent: ProfileIntent }) {
     const { user: profile, ...tokens } = await identity.login(credentials);
     api.setTokens(tokens);
     setSessionError(null);
     syncSession();
+    setOrganization(undefined);
     setUser(profile);
-    return profile;
+    setProfileType(getProfileType(profile.id, registration));
   }
 
   const request = useCallback(async <T,>(...args: Parameters<typeof api.request>) => {
@@ -129,6 +147,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [syncSession]);
 
+  const representativeId = profileType === 'ORG_REPRESENTATIVE' ? user?.id : undefined;
+  useEffect(() => {
+    if (!representativeId) return;
+    const controller = new AbortController();
+    const service = organizationService({ request });
+    service.listMine(0, 1, controller.signal).then(
+      result => {
+        if (!controller.signal.aborted) setOrganization({ userId: representativeId, version: organizationVersion, id: result.items[0]?.id ?? null });
+      },
+      error => {
+        if (!controller.signal.aborted) setOrganization({ userId: representativeId, version: organizationVersion, id: null, error });
+      },
+    );
+    return () => controller.abort();
+  }, [representativeId, organizationVersion, request]);
+
+  const currentOrganization = representativeId && organization?.userId === representativeId &&
+    organization.version === organizationVersion ? organization : undefined;
+
   async function logout() {
     try {
       await identity.logout();
@@ -139,7 +176,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  return <AuthContext.Provider value={{ user, loading, sessionError, login, logout, request }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{
+    user, loading, sessionError, login, logout, request, profileType,
+    organizationId: currentOrganization?.id ?? null,
+    organizationPending: Boolean(representativeId && !currentOrganization),
+    organizationError: currentOrganization?.error,
+    refreshOrganization: () => setOrganizationVersion(version => version + 1),
+  }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

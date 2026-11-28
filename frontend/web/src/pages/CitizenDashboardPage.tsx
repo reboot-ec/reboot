@@ -1,11 +1,13 @@
+import { Navigate } from 'react-router-dom';
 import { DashboardActionCard } from '../components/molecules/DashboardActionCard';
 import { CitizenImpactSummary } from '../components/organisms/CitizenImpactSummary';
 import { CitizenWelcome } from '../components/organisms/CitizenWelcome';
 import { useAuth } from '../context/AuthContext';
 
 export function CitizenDashboardPage() {
-  const { user } = useAuth();
+  const { user, profileType } = useAuth();
   if (!user) return null;
+  if (profileType === 'ORG_REPRESENTATIVE') return <Navigate replace to="/organizations/mine" />;
 
   return (
     <>

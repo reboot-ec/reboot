@@ -52,6 +52,11 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     @Transactional
     public OrganizationResponseDto create(UUID authenticatedUserId, CreateOrganizationRequestDto request) {
+        if (organizationRepository.existsByCreatedByUserId(authenticatedUserId)
+                || membershipRepository.existsByUserIdAndStatus(authenticatedUserId, MembershipStatus.ACTIVE)) {
+            throw new ApiException(HttpStatus.CONFLICT, "ORGANIZATION_ALREADY_ASSOCIATED",
+                    "You already have an organization.");
+        }
         Organization organization = organizationMapper.toEntity(request);
         organization.setCreatedByUserId(authenticatedUserId);
         Organization saved = organizationRepository.save(organization);

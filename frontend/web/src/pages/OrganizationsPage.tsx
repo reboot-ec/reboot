@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useOrganizations } from '../context/useOrganizations';
+import { useAuth } from '../context/AuthContext';
 import { Spinner } from '../components/atoms/Spinner';
 import { ErrorBanner } from '../components/molecules/ErrorBanner';
 import { Pagination } from '../components/molecules/Pagination';
@@ -10,6 +11,8 @@ import { OrganizationCard } from '../components/organisms/OrganizationCard';
 import { useApiQuery } from '../hooks/useApiQuery';
 
 export function OrganizationsPage() {
+  const { profileType, organizationId, organizationPending, organizationError } = useAuth();
+  const representative = profileType === 'ORG_REPRESENTATIVE';
   const [params, setParams] = useSearchParams();
   const name = params.get('name') ?? '';
   const types = organizationTypes.filter(type => params.getAll('type').includes(type));
@@ -27,8 +30,12 @@ export function OrganizationsPage() {
   return (
     <>
       <header className="directory-header">
-        <h1>Explore Centers &amp; Partners</h1>
-        <Link className="secondary-action" to="/organizations/new">Register an Organization</Link>
+        <h1>{representative ? 'Explore Network' : 'Explore Centers'}</h1>
+        {representative && !organizationPending && !organizationError && (
+          organizationId
+            ? <Link className="secondary-action" to={`/organizations/${organizationId}`}>My Organization</Link>
+            : <Link className="secondary-action" to="/organizations/new">Register Organization</Link>
+        )}
       </header>
       <SearchBar key={JSON.stringify([name, types])} name={name} types={types}
         onSearch={filters => {

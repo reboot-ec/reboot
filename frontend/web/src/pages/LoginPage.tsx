@@ -6,7 +6,6 @@ import { AuthCard } from '../components/organisms/AuthCard';
 import { FormField } from '../components/molecules/FormField';
 import { fieldError } from '../components/molecules/ErrorBanner';
 import { Label } from '../components/atoms/Label';
-import { getProfileIntent } from '../context/profileIntent';
 
 export function LoginPage() {
   const { login, sessionError } = useAuth();
@@ -21,18 +20,16 @@ export function LoginPage() {
     setPending(true);
     setError(null);
     try {
-      const user = await login({
+      await login({
         usernameOrEmail: String(form.get('usernameOrEmail')).trim(),
         password: String(form.get('password')),
         authProvider: form.get('authProvider') === 'ACTIVE_DIRECTORY' ? 'ACTIVE_DIRECTORY' : 'LOCAL',
-      });
+      }, state);
       const from: unknown = state?.from;
       if (typeof from === 'string' && /^\/organizations\/[^/\\]/.test(from)) {
         navigate(from, { replace: true });
-      } else if ((state?.userId === user.id && state.intent === 'representative') || getProfileIntent(user.id) === 'representative') {
-        navigate('/organizations/mine', { replace: true, state: { checkOnboarding: true } });
       } else {
-        navigate('/dashboard', { replace: true });
+        navigate('/organizations/mine', { replace: true });
       }
     } catch (failure) {
       setError(failure);

@@ -27,6 +27,8 @@ public interface OrganizationRepository extends JpaRepository<Organization, UUID
 
     boolean existsByTaxId(String taxId);
 
+    boolean existsByCreatedByUserId(UUID userId);
+
     @Query("""
             select organization from Organization organization
             where organization.organizationType in :types
@@ -38,11 +40,12 @@ public interface OrganizationRepository extends JpaRepository<Organization, UUID
 
     @Query("""
             select organization from Organization organization
-            where exists (
+            where organization.createdByUserId = :userId or exists (
                 select membership.id from OrganizationMembership membership
                 where membership.organization = organization
                   and membership.userId = :userId and membership.status = :status
             )
+            order by case when organization.createdByUserId = :userId then 0 else 1 end, organization.name
             """)
     Page<Organization> findForMember(@Param("userId") UUID userId,
                                      @Param("status") MembershipStatus status,

@@ -87,7 +87,7 @@ public class OrganizationController {
 
     @GetMapping("/mine")
     @SecurityRequirement(name = "bearerAuth")
-    @Operation(summary = "List organizations where the signed-in user has an active membership")
+    @Operation(summary = "List the organization created by the signed-in user, followed by active memberships")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Organizations returned"),
             @ApiResponse(responseCode = "400", description = "Invalid pagination"),

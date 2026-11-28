@@ -5,7 +5,8 @@ import { Button } from '../atoms/Button';
 import { ErrorBanner } from '../molecules/ErrorBanner';
 
 export function Navbar() {
-  const { user, logout, loading } = useAuth();
+  const { user, logout, loading, profileType, organizationId, organizationPending, organizationError } = useAuth();
+  const representative = profileType === 'ORG_REPRESENTATIVE';
   const { pathname, search } = useLocation();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<unknown>(null);
@@ -26,11 +27,15 @@ export function Navbar() {
     <header className="site-header">
       <nav className="container nav" aria-label="Main navigation">
         <Link className="brand" to="/organizations">REBOOT</Link>
-        {user && <Link to="/dashboard">Home</Link>}
-        <Link to="/organizations">Explore Centers &amp; Partners</Link>
+        {profileType === 'CITIZEN' && <Link to="/dashboard">Home</Link>}
+        {representative && !organizationPending && !organizationError && (
+          organizationId
+            ? <Link to={`/organizations/${organizationId}`}>My Organization</Link>
+            : <Link to="/organizations/new">Register Organization</Link>
+        )}
+        <Link to="/organizations">{representative ? 'Explore Network' : 'Explore Centers'}</Link>
         {user ? (
           <>
-            <Link to="/organizations/mine">My Organizations</Link>
             <span className="nav-user">{user.fullName} <small>{user.email}</small></span>
             <Button disabled={pending} onClick={signOut}>Sign out</Button>
           </>
