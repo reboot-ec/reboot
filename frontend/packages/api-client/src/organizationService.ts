@@ -12,6 +12,7 @@ export interface OrganizationQuery {
   pageSize?: number;
   name?: string;
   type?: Organization['organizationType'] | '';
+  types?: readonly Organization['organizationType'][];
 }
 
 interface OrganizationPage {
@@ -34,17 +35,21 @@ export function organizationService({ request }: Pick<ReturnType<typeof createAp
   }
 
   return {
-    list({ page = 0, pageSize = 20, name, type }: OrganizationQuery = {}, signal?: AbortSignal) {
+    list({ page = 0, pageSize = 20, name, type, types }: OrganizationQuery = {}, signal?: AbortSignal) {
       const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
       if (name?.trim()) params.set('name', name.trim());
-      if (type) params.set('type', type);
+      for (const value of types ?? (type ? [type] : [])) params.append('type', value);
       return data(request<OrganizationPage>(`${base}?${params}`, { signal }));
     },
     create(json: OrganizationInput) {
       return data(request<Organization>(base, { method: 'POST', json }));
     },
+    listMine(page = 0, pageSize = 20, signal?: AbortSignal) {
+      const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+      return data(request<OrganizationPage>(`${base}/mine?${params}`, { signal }));
+    },
     get(id: string, signal?: AbortSignal) {
-      return data(request<Organization>(organization(id), { signal }));
+      return data(request<Organization>(organization(id), { signal, authenticated: false }));
     },
     update(id: string, json: OrganizationPatch) {
       return data(request<Organization>(organization(id), { method: 'PATCH', json }));

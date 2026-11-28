@@ -7,12 +7,15 @@ import com.reboot.organization.dto.PatchOrganizationRequestDto;
 import com.reboot.organization.model.OrganizationType;
 
 import java.util.UUID;
+import java.util.List;
 
 public interface OrganizationService {
 
     OrganizationResponseDto create(UUID authenticatedUserId, CreateOrganizationRequestDto request);
 
-    OrganizationPageDto getOrganizations(int page, int pageSize, OrganizationType type, String name);
+    OrganizationPageDto getOrganizations(int page, int pageSize, List<OrganizationType> types, String name);
+
+    OrganizationPageDto getMyOrganizations(UUID userId, int page, int pageSize);
 
     OrganizationResponseDto getOrganization(UUID organizationId);
 

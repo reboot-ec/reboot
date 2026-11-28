@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
+import java.util.List;
 
 @Validated
 @RestController
@@ -77,11 +78,26 @@ public class OrganizationController {
             @Parameter(description = "Zero-based page number") @RequestParam(defaultValue = "0") @Min(0) int page,
             @Parameter(description = "Page size, from 1 to 100") @RequestParam(defaultValue = "20")
             @Min(1) @Max(100) int pageSize,
-            @Parameter(description = "Optional organization type") @RequestParam(required = false)
-            OrganizationType type,
+            @Parameter(description = "Optional organization types. Repeat type to match any selected type.")
+            @RequestParam(name = "type", required = false) List<OrganizationType> types,
             @Parameter(description = "Optional case-insensitive name filter") @RequestParam(required = false)
             @Size(max = 255) String name) {
-        return success(organizationService.getOrganizations(page, pageSize, type, name));
+        return success(organizationService.getOrganizations(page, pageSize, types, name));
+    }
+
+    @GetMapping("/mine")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "List the organization created by the signed-in user, followed by active memberships")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Organizations returned"),
+            @ApiResponse(responseCode = "400", description = "Invalid pagination"),
+            @ApiResponse(responseCode = "401", description = "Authentication required")
+    })
+    public ApiResponseDto<OrganizationPageDto> getMyOrganizations(
+            @AuthenticationPrincipal JwtPrincipal principal,
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "20") @Min(1) @Max(100) int pageSize) {
+        return success(organizationService.getMyOrganizations(principal.userId(), page, pageSize));
     }
 
     @GetMapping("/{organizationId}")

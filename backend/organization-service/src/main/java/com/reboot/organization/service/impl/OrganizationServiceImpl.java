@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.UUID;
+import java.util.List;
 
 @Service
 public class OrganizationServiceImpl implements OrganizationService {
@@ -51,6 +52,11 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     @Transactional
     public OrganizationResponseDto create(UUID authenticatedUserId, CreateOrganizationRequestDto request) {
+        if (organizationRepository.existsByCreatedByUserId(authenticatedUserId)
+                || membershipRepository.existsByUserIdAndStatus(authenticatedUserId, MembershipStatus.ACTIVE)) {
+            throw new ApiException(HttpStatus.CONFLICT, "ORGANIZATION_ALREADY_ASSOCIATED",
+                    "You already have an organization.");
+        }
         Organization organization = organizationMapper.toEntity(request);
         organization.setCreatedByUserId(authenticatedUserId);
         Organization saved = organizationRepository.save(organization);
@@ -62,15 +68,28 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     @Transactional(readOnly = true)
-    public OrganizationPageDto getOrganizations(int page, int pageSize, OrganizationType type, String name) {
+    public OrganizationPageDto getOrganizations(int page, int pageSize, List<OrganizationType> types, String name) {
+        String nameFilter = StringUtils.hasText(name) ? name.trim() : null;
+        List<OrganizationType> filter = types == null || types.isEmpty() ? List.of(OrganizationType.values()) : types;
+        return toPage(organizationRepository.search(filter, nameFilter, pageRequest(page, pageSize)));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OrganizationPageDto getMyOrganizations(UUID userId, int page, int pageSize) {
+        return toPage(organizationRepository.findForMember(userId, MembershipStatus.ACTIVE, pageRequest(page, pageSize)));
+    }
+
+    private PageRequest pageRequest(int page, int pageSize) {
         if (page < 0 || pageSize < 1 || pageSize > MAX_PAGE_SIZE) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_PAGINATION",
                     "Page must be non-negative and pageSize must be between 1 and 100.");
         }
 
-        String nameFilter = StringUtils.hasText(name) ? name.trim() : null;
-        Page<Organization> result = organizationRepository.search(
-                type, nameFilter, PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "name")));
+        return PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "name"));
+    }
+
+    private OrganizationPageDto toPage(Page<Organization> result) {
         return new OrganizationPageDto(
                 result.getContent().stream().map(organizationMapper::toDto).toList(),
                 result.getNumber(),

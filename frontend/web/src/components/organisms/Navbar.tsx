@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '../atoms/Button';
 import { ErrorBanner } from '../molecules/ErrorBanner';
 
 export function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, logout, loading, profileType, organizationId, organizationStatus, organizationPending, organizationError } = useAuth();
+  const representative = profileType === 'ORG_REPRESENTATIVE';
+  const { pathname, search } = useLocation();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<unknown>(null);
 
@@ -25,9 +27,21 @@ export function Navbar() {
     <header className="site-header">
       <nav className="container nav" aria-label="Main navigation">
         <Link className="brand" to="/organizations">REBOOT</Link>
-        <Link to="/organizations">Organizations</Link>
-        {user && <span className="nav-user">{user.fullName} <small>{user.email}</small></span>}
-        <Button disabled={pending} onClick={signOut}>Sign out</Button>
+        {profileType === 'CITIZEN' && <Link to="/dashboard">Home</Link>}
+        {representative && !organizationPending && !organizationError && (
+          organizationId
+            ? organizationStatus === 'ACTIVE'
+              ? <Link to="/org-dashboard">Organization Hub</Link>
+              : <Link to={`/organizations/${organizationId}`}>My Organization</Link>
+            : <Link to="/organizations/new">Register Organization</Link>
+        )}
+        <Link to="/organizations">{representative ? 'Explore Network' : 'Explore Centers'}</Link>
+        {user ? (
+          <>
+            <span className="nav-user">{user.fullName} <small>{user.email}</small></span>
+            <Button disabled={pending} onClick={signOut}>Sign out</Button>
+          </>
+        ) : !loading && <Link to="/login" state={{ from: pathname + search }}>Sign in</Link>}
       </nav>
       <ErrorBanner error={error} />
     </header>

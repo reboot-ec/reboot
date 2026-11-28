@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .authenticationEntryPoint(securityErrorHandler)
                         .accessDeniedHandler(securityErrorHandler))
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.GET, "/api/v1/organizations/mine").authenticated()
                         .requestMatchers(HttpMethod.GET,
                                 "/api/v1/organizations",
                                 "/api/v1/organizations/*",

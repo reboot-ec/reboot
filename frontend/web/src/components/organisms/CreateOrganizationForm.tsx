@@ -1,18 +1,16 @@
 import { useNavigate } from 'react-router-dom';
 import { useOrganizations } from '../../context/useOrganizations';
+import { useAuth } from '../../context/AuthContext';
 import { OrganizationForm } from './OrganizationForm';
 
 export function CreateOrganizationForm() {
   const service = useOrganizations();
+  const { refreshOrganization } = useAuth();
   const navigate = useNavigate();
 
-  return (
-    <details className="card">
-      <summary>Register organization</summary>
-      <OrganizationForm onSave={async input => {
-        const organization = await service.create(input);
-        navigate(`/organizations/${organization.id}`);
-      }} />
-    </details>
-  );
+  return <OrganizationForm onSave={async input => {
+    const organization = await service.create(input);
+    refreshOrganization();
+    navigate(organization.status === 'ACTIVE' ? '/org-dashboard' : `/organizations/${organization.id}`, { replace: true });
+  }} />;
 }

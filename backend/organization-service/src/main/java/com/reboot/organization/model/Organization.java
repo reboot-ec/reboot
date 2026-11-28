@@ -24,7 +24,8 @@ import java.util.UUID;
     name = "organizations",
     uniqueConstraints = {
         @UniqueConstraint(name = "uk_organizations_name", columnNames = "name"),
-        @UniqueConstraint(name = "uk_organizations_tax_id", columnNames = "tax_id")
+        @UniqueConstraint(name = "uk_organizations_tax_id", columnNames = "tax_id"),
+        @UniqueConstraint(name = "uk_organizations_created_by_user", columnNames = "created_by_user_id")
     }
 )
 public class Organization {

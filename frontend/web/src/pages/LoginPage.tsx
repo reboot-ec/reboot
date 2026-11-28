@@ -24,9 +24,13 @@ export function LoginPage() {
         usernameOrEmail: String(form.get('usernameOrEmail')).trim(),
         password: String(form.get('password')),
         authProvider: form.get('authProvider') === 'ACTIVE_DIRECTORY' ? 'ACTIVE_DIRECTORY' : 'LOCAL',
-      });
+      }, state);
       const from: unknown = state?.from;
-      navigate(typeof from === 'string' && /^\/organizations(?:[/?]|$)/.test(from) ? from : '/organizations', { replace: true });
+      if (typeof from === 'string' && /^\/organizations\/[\da-f-]{36}(?:[?#]|$)/i.test(from)) {
+        navigate(from, { replace: true });
+      } else {
+        navigate('/organizations/mine', { replace: true });
+      }
     } catch (failure) {
       setError(failure);
     } finally {
