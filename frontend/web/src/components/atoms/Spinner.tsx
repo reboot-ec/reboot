@@ -1,3 +1,3 @@
 export function Spinner() {
-  return <p className="spinner" role="status">Cargando…</p>;
+  return <p className="spinner" role="status">Loading…</p>;
 }

@@ -1,23 +1,23 @@
-# Frontend de REBOOT
+# REBOOT Frontend
 
-El frontend es un monorepo de npm workspaces. Ejecuta los comandos desde `frontend/`. El archivo `package-lock.json` registra las dependencias de la aplicación y los paquetes compartidos.
+The frontend uses npm workspaces. Run commands from `frontend/`. The `package-lock.json` file records dependencies for the application and shared packages.
 
-| Ruta | Responsabilidad |
+| Path | Responsibility |
 | --- | --- |
-| `web/` | Aplicación `@reboot/web` con React 18, TypeScript, Vite y React Router. Implementa autenticación y gestión de organizaciones y membresías. |
-| `packages/api-client/` | `@reboot/api-client` centraliza las solicitudes HTTP, el token Bearer, el `X-Request-Id` y la renovación de sesión. Exporta `authService` y `organizationService`. |
-| `packages/shared-types/` | `@reboot/shared-types` define los contratos TypeScript de usuarios, sesiones, organizaciones, membresías y respuestas de API. |
-| `desktop/` y `mobile/` | Directorios reservados para clientes futuros. Electron y Capacitor son las opciones previstas. |
+| `web/` | The `@reboot/web` application uses React 18, TypeScript, Vite, and React Router. It provides authentication and manages organizations and memberships. |
+| `packages/api-client/` | `@reboot/api-client` handles HTTP requests, Bearer authentication, the `X-Request-Id` header, and session renewal. It exports `authService` and `organizationService`. |
+| `packages/shared-types/` | `@reboot/shared-types` defines TypeScript contracts for users, sessions, organizations, memberships, and API responses. |
+| `desktop/` and `mobile/` | Directories reserved for future clients. Electron and Capacitor are the planned options. |
 
-Los workspaces activos son `web` y `packages/*`. Al implementar los clientes de escritorio y móvil, incorpóralos como workspaces y declara los paquetes compartidos como dependencias. Cada cliente puede configurar su instancia del cliente HTTP y adaptar el almacenamiento de sesión y la navegación a su plataforma. Para reutilizar el diseño, toma como base los tokens CSS de `web/src/styles/global.css` y los componentes React que sean compatibles con el cliente.
+The active workspaces are `web` and `packages/*`. When implementing desktop and mobile clients, add them as workspaces and declare the shared packages as dependencies. Each client can configure its HTTP client and adapt session storage and navigation to its platform. Reuse the CSS tokens from `web/src/styles/global.css` and compatible React components to share the design.
 
 ## Atomic Design
 
-En `web/src/components/`, `atoms/` contiene controles básicos, `molecules/` combina controles en unidades reutilizables, `organisms/` reúne formularios y secciones completas y `templates/` organiza la estructura de cada pantalla. `web/src/pages/` conecta esas piezas con las rutas y los datos. Consulta los ejemplos y la estructura completa en la [guía de la aplicación web](web/README.md).
+Under `web/src/components/`, `atoms/` contains basic controls, `molecules/` combines controls into reusable units, `organisms/` assembles forms and sections, and `templates/` defines screen layouts. `web/src/pages/` connects those pieces to routes and data. See the [web application guide](web/README.md) for the full structure and examples.
 
-## Instalación, ejecución y compilación
+## Install, run, and build
 
-Usa npm con una versión de Node.js compatible con el Vite instalado. El proyecto se verificó con Node.js 24.14.0 y npm 11.9.0.
+Use npm with a Node.js version supported by the installed version of Vite. The project was verified with Node.js 24.14.0 and npm 11.9.0.
 
 ```powershell
 npm install
@@ -25,22 +25,22 @@ if (-not (Test-Path web/.env)) { Copy-Item web/.env.example web/.env }
 npm run dev
 ```
 
-Copia la plantilla al configurar el entorno por primera vez y conserva tu `web/.env` si ya existe. Para generar la compilación de producción, ejecuta por separado:
+Copy the template during initial setup. The command preserves an existing `web/.env`. To generate a production build, run this command separately.
 
 ```powershell
 npm run build
 ```
 
-El comando valida TypeScript en la aplicación y los paquetes compartidos y genera `web/dist/`. Desde la misma carpeta también puedes ejecutar `npm run typecheck` y `npm run lint`.
+The build checks TypeScript across the application and shared packages and writes the output to `web/dist/`. You can also run `npm run typecheck` and `npm run lint` from the same directory.
 
-## Variables de entorno
+## Environment variables
 
-Configura estas variables en `web/.env` a partir de [web/.env.example](web/.env.example).
+Set these variables in `web/.env` using [web/.env.example](web/.env.example) as a template.
 
-| Variable | Uso |
+| Variable | Purpose |
 | --- | --- |
-| `VITE_API_BASE_URL` | URL HTTPS base de Amazon API Gateway en AWS, incluido el stage cuando forme parte de la URL. Tiene prioridad para todas las solicitudes. |
-| `VITE_IDENTITY_API_URL` | URL local de Identity. El valor predeterminado es `http://localhost:8081`. |
-| `VITE_ORGANIZATION_API_URL` | URL local de Organization. El valor predeterminado es `http://localhost:8082`. |
+| `VITE_API_BASE_URL` | HTTPS base URL for Amazon API Gateway on AWS, including the stage if it is part of the URL. This setting takes precedence for all requests. |
+| `VITE_IDENTITY_API_URL` | Local Identity service URL. Defaults to `http://localhost:8081`. |
+| `VITE_ORGANIZATION_API_URL` | Local Organization service URL. Defaults to `http://localhost:8082`. |
 
-Deja `VITE_API_BASE_URL` vacía para usar los servicios locales. Las variables `VITE_*` se exponen al navegador y deben contener solo configuración pública. Git ignora los archivos `.env` y sus variantes locales, y permite versionar la plantilla `.env.example`.
+Leave `VITE_API_BASE_URL` blank to use local services. Vite exposes `VITE_*` variables to the browser, so use them only for public configuration. Git ignores `.env` files and their local variants and allows the `.env.example` template to be tracked.

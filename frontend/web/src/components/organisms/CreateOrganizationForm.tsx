@@ -8,7 +8,7 @@ export function CreateOrganizationForm() {
 
   return (
     <details className="card">
-      <summary>Registrar organización</summary>
+      <summary>Register organization</summary>
       <OrganizationForm onSave={async input => {
         const organization = await service.create(input);
         navigate(`/organizations/${organization.id}`);

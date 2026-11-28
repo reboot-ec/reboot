@@ -20,7 +20,7 @@ export function AuthCard({ title, submitLabel, onSubmit, pending, error, childre
       <form onSubmit={onSubmit}>
         <fieldset disabled={pending}>
           {children}
-          <Button type="submit">{pending ? 'Enviando…' : submitLabel}</Button>
+          <Button type="submit">{pending ? 'Submitting…' : submitLabel}</Button>
         </fieldset>
       </form>
       <footer>{footer}</footer>

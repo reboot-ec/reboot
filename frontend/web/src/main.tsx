@@ -27,7 +27,7 @@ createRoot(document.getElementById('root')!).render(
               <Route path="/organizations/:id" element={<OrganizationDetailPage />} />
             </Route>
           </Route>
-          <Route path="*" element={<main className="container dashboard"><h1>Página no encontrada</h1><Link to="/">Volver al inicio</Link></main>} />
+          <Route path="*" element={<main className="container dashboard"><h1>Page not found</h1><Link to="/">Back to home</Link></main>} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

@@ -32,12 +32,12 @@ export function RegisterPage() {
   }
 
   return (
-    <AuthCard title="Crear cuenta" submitLabel="Registrarme" onSubmit={submit} pending={pending} error={error}
-      footer={<Link to="/login">Iniciar sesión</Link>}>
-      <FormField label="Nombre completo" name="fullName" autoComplete="name" maxLength={255} error={fieldError(error, 'fullName')} required />
-      <FormField label="Correo electrónico" name="email" type="email" autoComplete="email" maxLength={255} error={fieldError(error, 'email')} required />
-      <FormField label="Usuario" name="username" autoComplete="username" minLength={3} maxLength={150} error={fieldError(error, 'username')} required />
-      <FormField label="Contraseña" name="password" type="password" autoComplete="new-password" minLength={10} maxLength={72}
+    <AuthCard title="Create account" submitLabel="Sign up" onSubmit={submit} pending={pending} error={error}
+      footer={<Link to="/login">Sign in</Link>}>
+      <FormField label="Full name" name="fullName" autoComplete="name" maxLength={255} error={fieldError(error, 'fullName')} required />
+      <FormField label="Email address" name="email" type="email" autoComplete="email" maxLength={255} error={fieldError(error, 'email')} required />
+      <FormField label="Username" name="username" autoComplete="username" minLength={3} maxLength={150} error={fieldError(error, 'username')} required />
+      <FormField label="Password" name="password" type="password" autoComplete="new-password" minLength={10} maxLength={72}
         error={fieldError(error, 'password')} required />
     </AuthCard>
   );

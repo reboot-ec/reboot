@@ -2,6 +2,7 @@ import { useId, useState } from 'react';
 import type { ComponentPropsWithoutRef } from 'react';
 import { Input } from '../atoms/Input';
 import { Label } from '../atoms/Label';
+import { focusFirstInvalidField, validationMessage } from './validationMessage';
 
 export function FormField({
   label, error, onInvalid, onChange, 'aria-describedby': describedBy, ...input
@@ -16,11 +17,14 @@ export function FormField({
       <Label htmlFor={id}>{label}</Label>
       <Input {...input} id={id} aria-invalid={Boolean(message)} aria-describedby={description || undefined}
         onInvalid={event => {
-          setValidationError(event.currentTarget.validationMessage);
+          event.preventDefault();
+          const field = event.currentTarget;
+          setValidationError(validationMessage(field));
+          focusFirstInvalidField(field);
           onInvalid?.(event);
         }}
         onChange={event => {
-          if (validationError) setValidationError(event.currentTarget.validationMessage);
+          if (validationError) setValidationError(validationMessage(event.currentTarget));
           onChange?.(event);
         }}
       />

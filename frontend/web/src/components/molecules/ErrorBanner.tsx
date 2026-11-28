@@ -13,9 +13,9 @@ export function ErrorBanner({ error }: { error: unknown }) {
 
   return (
     <Alert>
-      <p>{response?.message ?? 'No se pudo completar la operación. Inténtalo de nuevo.'}</p>
+      <p>{response?.message ?? 'Something went wrong. Please try again.'}</p>
       {response?.details?.length ? <ul>{response.details.map((detail, index) => <li key={index}>{detail}</li>)}</ul> : null}
-      {response?.requestId && <small>Solicitud <code>{response.requestId}</code></small>}
+      {response?.requestId && <small>Request ID <code>{response.requestId}</code></small>}
     </Alert>
   );
 }

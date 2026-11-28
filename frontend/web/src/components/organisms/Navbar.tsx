@@ -23,11 +23,11 @@ export function Navbar() {
 
   return (
     <header className="site-header">
-      <nav className="container nav" aria-label="Navegación principal">
+      <nav className="container nav" aria-label="Main navigation">
         <Link className="brand" to="/organizations">REBOOT</Link>
-        <Link to="/organizations">Organizaciones</Link>
+        <Link to="/organizations">Organizations</Link>
         {user && <span className="nav-user">{user.fullName} <small>{user.email}</small></span>}
-        <Button disabled={pending} onClick={signOut}>Cerrar sesión</Button>
+        <Button disabled={pending} onClick={signOut}>Sign out</Button>
       </nav>
       <ErrorBanner error={error} />
     </header>

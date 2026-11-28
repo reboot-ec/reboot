@@ -1,42 +1,42 @@
 # REBOOT Web
 
-`@reboot/web` ofrece inicio de sesión local y por Active Directory, registro de usuarios y rutas protegidas para consultar y gestionar organizaciones y membresías. Usa los contratos de [@reboot/shared-types](../packages/shared-types) y los servicios de [@reboot/api-client](../packages/api-client).
+`@reboot/web` provides local and Active Directory sign-in, user registration, and protected routes for viewing and managing organizations and memberships. It uses the contracts from [@reboot/shared-types](../packages/shared-types) and services from [@reboot/api-client](../packages/api-client).
 
-`src/context/api.ts` configura el cliente HTTP con las variables de Vite. `AuthContext` restaura la sesión de la pestaña con `/me`, y `useOrganizations` conecta las operaciones de organizaciones con la sesión activa. Los futuros clientes de [escritorio](../desktop) y [móvil](../mobile) pueden consumir esos mismos paquetes y reutilizar componentes React y tokens CSS compatibles con su plataforma. Consulta la [arquitectura del frontend](../README.md).
+`src/context/api.ts` configures the HTTP client from Vite's environment variables. `AuthContext` restores the tab session using `/me`, and `useOrganizations` connects organization operations to the active session. Future [desktop](../desktop) and [mobile](../mobile) clients can use the same packages and reuse compatible React components and CSS tokens. See the [frontend architecture](../README.md).
 
 ## Atomic Design
 
-| Ruta en `src/` | Responsabilidad y ejemplos |
+| Path within `src/` | Responsibility and examples |
 | --- | --- |
-| `components/atoms/` | Controles básicos como `Button`, `Input`, `Badge` y `Spinner`. |
-| `components/molecules/` | Combinaciones reutilizables como `FormField`, `SelectField`, `SearchBar`, `Pagination` y `ErrorBanner`. |
-| `components/organisms/` | Secciones completas como `Navbar`, `AuthCard`, `OrganizationCard`, formularios de organizaciones y `MemberTable`. |
-| `components/templates/` | Estructura de las pantallas y acceso a las rutas mediante `AuthLayout`, `DashboardLayout` y `ProtectedRoute`. |
-| `pages/` | Pantallas que componen la interfaz y conectan los flujos con la API. |
-| `styles/` | Estilos globales y tokens CSS de color, espaciado y bordes. |
+| `components/atoms/` | Basic controls such as `Button`, `Input`, `Badge`, and `Spinner`. |
+| `components/molecules/` | Reusable combinations such as `FormField`, `SelectField`, `SearchBar`, `Pagination`, and `ErrorBanner`. |
+| `components/organisms/` | Complete sections such as `Navbar`, `AuthCard`, `OrganizationCard`, organization forms, and `MemberTable`. |
+| `components/templates/` | Screen layouts and route access through `AuthLayout`, `DashboardLayout`, and `ProtectedRoute`. |
+| `pages/` | Screens that assemble the interface and connect workflows to the API. |
+| `styles/` | Global styles and CSS tokens for color, spacing, and borders. |
 
-| Ruta | Página |
+| Route | Page |
 | --- | --- |
 | `/login` | `LoginPage` |
 | `/register` | `RegisterPage` |
 | `/organizations` | `OrganizationsPage` |
 | `/organizations/:id` | `OrganizationDetailPage` |
 
-## Entornos
+## Environments
 
-Copia [`.env.example`](.env.example) a `.env` dentro de `frontend/web/`.
+Copy [`.env.example`](.env.example) to `.env` in `frontend/web/`.
 
-| Variable | Configuración |
+| Variable | Configuration |
 | --- | --- |
-| `VITE_API_BASE_URL` | Para AWS, usa la URL HTTPS de Amazon API Gateway, con el stage cuando corresponda. El cliente añade las rutas `/api/v1/...`. |
-| `VITE_IDENTITY_API_URL` | Para pruebas locales, usa `http://localhost:8081` o la URL del servicio Identity que estés ejecutando. |
-| `VITE_ORGANIZATION_API_URL` | Para pruebas locales, usa `http://localhost:8082` o la URL del servicio Organization que estés ejecutando. |
+| `VITE_API_BASE_URL` | On AWS, use the Amazon API Gateway HTTPS URL, including the stage where applicable. The client appends the `/api/v1/...` paths. |
+| `VITE_IDENTITY_API_URL` | For local testing, use `http://localhost:8081` or the URL of your running Identity service. |
+| `VITE_ORGANIZATION_API_URL` | For local testing, use `http://localhost:8082` or the URL of your running Organization service. |
 
-Con `VITE_API_BASE_URL` vacía, cada solicitud usa la URL local de su servicio. Para probar los flujos locales, inicia [Identity](../../backend/identity-service/README.md) y [Organization](../../backend/organization-service/README.md). Aplica los cambios de configuración reiniciando Vite en desarrollo o generando una nueva compilación para producción. Usa las variables `VITE_*` solo para valores públicos.
+When `VITE_API_BASE_URL` is blank, each request uses its service's local URL. To test locally, start [Identity](../../backend/identity-service/README.md) and [Organization](../../backend/organization-service/README.md). Restart Vite in development or rebuild for production to apply configuration changes. Use `VITE_*` variables only for public values.
 
-## Comandos
+## Commands
 
-Ejecuta desde `frontend/`:
+Run these commands from `frontend/`.
 
 ```powershell
 npm install
@@ -44,10 +44,10 @@ if (-not (Test-Path web/.env)) { Copy-Item web/.env.example web/.env }
 npm run dev
 ```
 
-La copia de la plantilla se hace una vez. Abre la URL que imprime Vite, normalmente `http://localhost:5173`. Para compilar con la comprobación de TypeScript, ejecuta:
+The template is copied during initial setup. Open the URL printed by Vite, typically `http://localhost:5173`. Run the following command to check TypeScript and build the application.
 
 ```powershell
 npm run build
 ```
 
-La salida se genera en `frontend/web/dist/`. Cuando sirvas esa carpeta, configura la redirección de rutas del cliente a `index.html` para permitir abrir directamente rutas como `/login`.
+The build output is written to `frontend/web/dist/`. When hosting that directory, configure a fallback to `index.html` so users can open client routes such as `/login` directly.

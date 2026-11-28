@@ -6,7 +6,7 @@ import { Button } from '../atoms/Button';
 import { ErrorBanner, fieldError } from '../molecules/ErrorBanner';
 import { FormField } from '../molecules/FormField';
 import { SelectField } from '../molecules/SelectField';
-import { organizationStatuses, organizationTypes } from '../molecules/organizationOptions';
+import { organizationStatuses, organizationTypes, organizationTypeLabels, statusLabels } from '../molecules/organizationOptions';
 
 interface Props {
   organization?: Organization;
@@ -49,24 +49,24 @@ export function OrganizationForm({ organization, onSave }: Props) {
   return (
     <form onSubmit={submit} className="management-form">
       <ErrorBanner error={error} />
-      {saved && <p role="status">Cambios guardados.</p>}
+      {saved && <p role="status">Changes saved.</p>}
       <fieldset disabled={pending} onChange={() => setSaved(false)}>
-        <FormField label="Nombre" name="name" defaultValue={organization?.name} maxLength={255} pattern={/.*\S.*/.source} required error={fieldError(error, 'name')} />
-        <SelectField label="Tipo" name="organizationType" defaultValue={organization?.organizationType ?? ''} required error={fieldError(error, 'organizationType')}>
-          <option value="" disabled>Selecciona un tipo</option>
-          {organizationTypes.map(type => <option key={type}>{type}</option>)}
+        <FormField label="Name" name="name" defaultValue={organization?.name} maxLength={255} pattern={/.*\S.*/.source} required error={fieldError(error, 'name')} />
+        <SelectField label="Type" name="organizationType" defaultValue={organization?.organizationType ?? ''} required error={fieldError(error, 'organizationType')}>
+          <option value="" disabled>Select a type</option>
+          {organizationTypes.map(type => <option key={type} value={type}>{organizationTypeLabels[type]}</option>)}
         </SelectField>
-        <FormField label="Identificación fiscal" name="taxId" defaultValue={organization?.taxId ?? ''} maxLength={100} error={fieldError(error, 'taxId')} />
-        <FormField label="Descripción" name="description" defaultValue={organization?.description ?? ''} error={fieldError(error, 'description')} />
-        <FormField label="Correo de contacto" name="contactEmail" type="email" defaultValue={organization?.contactEmail ?? ''} maxLength={255} error={fieldError(error, 'contactEmail')} />
-        <FormField label="Teléfono de contacto" name="contactPhone" type="tel" defaultValue={organization?.contactPhone ?? ''} maxLength={50} error={fieldError(error, 'contactPhone')} />
-        <FormField label="Dirección" name="address" defaultValue={organization?.address ?? ''} error={fieldError(error, 'address')} />
+        <FormField label="Tax ID" name="taxId" defaultValue={organization?.taxId ?? ''} maxLength={100} error={fieldError(error, 'taxId')} />
+        <FormField label="Description" name="description" defaultValue={organization?.description ?? ''} error={fieldError(error, 'description')} />
+        <FormField label="Contact email" name="contactEmail" type="email" defaultValue={organization?.contactEmail ?? ''} maxLength={255} error={fieldError(error, 'contactEmail')} />
+        <FormField label="Contact phone" name="contactPhone" type="tel" defaultValue={organization?.contactPhone ?? ''} maxLength={50} error={fieldError(error, 'contactPhone')} />
+        <FormField label="Address" name="address" defaultValue={organization?.address ?? ''} error={fieldError(error, 'address')} />
         {organization && (
-          <SelectField label="Estado" name="status" defaultValue={organization.status} error={fieldError(error, 'status')}>
-            {organizationStatuses.map(status => <option key={status}>{status}</option>)}
+          <SelectField label="Status" name="status" defaultValue={organization.status} error={fieldError(error, 'status')}>
+            {organizationStatuses.map(status => <option key={status} value={status}>{statusLabels[status]}</option>)}
           </SelectField>
         )}
-        <Button type="submit">{pending ? 'Guardando…' : organization ? 'Guardar cambios' : 'Registrar organización'}</Button>
+        <Button type="submit">{pending ? 'Saving…' : organization ? 'Save changes' : 'Register organization'}</Button>
       </fieldset>
     </form>
   );

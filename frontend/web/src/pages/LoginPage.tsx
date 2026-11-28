@@ -35,18 +35,18 @@ export function LoginPage() {
   }
 
   return (
-    <AuthCard title="Iniciar sesión" submitLabel="Entrar" onSubmit={submit} pending={pending} error={error ?? (!pending && sessionError ? sessionError : null)}
-      footer={<Link to="/register">Crear cuenta</Link>}>
+    <AuthCard title="Sign in" submitLabel="Sign in" onSubmit={submit} pending={pending} error={error ?? (!pending && sessionError ? sessionError : null)}
+      footer={<Link to="/register">Create account</Link>}>
       <div className="field">
-        <Label htmlFor="auth-provider">Proveedor de autenticación</Label>
+        <Label htmlFor="auth-provider">Authentication provider</Label>
         <select id="auth-provider" name="authProvider" defaultValue="LOCAL">
           <option value="LOCAL">Local</option>
           <option value="ACTIVE_DIRECTORY">Active Directory</option>
         </select>
       </div>
-      <FormField label="Usuario o correo electrónico" name="usernameOrEmail" autoComplete="username" maxLength={255}
+      <FormField label="Username or email address" name="usernameOrEmail" autoComplete="username" maxLength={255}
         error={fieldError(error, 'usernameOrEmail')} required />
-      <FormField label="Contraseña" name="password" type="password" autoComplete="current-password" maxLength={72}
+      <FormField label="Password" name="password" type="password" autoComplete="current-password" maxLength={72}
         error={fieldError(error, 'password')} required />
     </AuthCard>
   );

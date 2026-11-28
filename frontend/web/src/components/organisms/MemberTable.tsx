@@ -7,7 +7,7 @@ import { Button } from '../atoms/Button';
 import { ErrorBanner, fieldError } from '../molecules/ErrorBanner';
 import { FormField } from '../molecules/FormField';
 import { SelectField } from '../molecules/SelectField';
-import { memberRoles, memberStatuses } from '../molecules/organizationOptions';
+import { memberRoles, memberStatuses, roleLabels, statusLabels } from '../molecules/organizationOptions';
 
 interface Props {
   organizationId: string;
@@ -51,7 +51,7 @@ export function MemberTable({ organizationId, members, managerRole, onSaved }: P
     if (feedback?.target !== target) return null;
     return feedback.error
       ? <ErrorBanner error={feedback.error} />
-      : <p role="status">{target === 'new' ? 'Invitación registrada.' : 'Cambios guardados.'}</p>;
+      : <p role="status">{target === 'new' ? 'Invitation created.' : 'Changes saved.'}</p>;
   }
 
   return (
@@ -59,37 +59,37 @@ export function MemberTable({ organizationId, members, managerRole, onSaved }: P
       {managerRole && (
         <form className="management-form" onSubmit={event => void save(event)}>
           <fieldset disabled={pending}>
-            <legend>Agregar miembro</legend>
-            <FormField label="ID de usuario" name="userId" required pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+            <legend>Add member</legend>
+            <FormField label="User ID" name="userId" required pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
               error={feedback?.target === 'new' ? fieldError(feedback.error, 'userId') : undefined} />
-            <SelectField label="Rol" name="role" defaultValue="MEMBER">
-              {allowedRoles.map(role => <option key={role}>{role}</option>)}
+            <SelectField label="Role" name="role" defaultValue="MEMBER">
+              {allowedRoles.map(role => <option key={role} value={role}>{roleLabels[role]}</option>)}
             </SelectField>
-            <Button type="submit">Agregar miembro</Button>
+            <Button type="submit">Add member</Button>
           </fieldset>
           {result('new')}
         </form>
       )}
-      {!members.length ? <p>No hay miembros para mostrar.</p> : (
+      {!members.length ? <p>No members to display.</p> : (
         <div className="table-scroll">
-          <table aria-label="Miembros de la organización">
-            <thead><tr><th scope="col">Usuario</th><th scope="col">Rol</th><th scope="col">Estado</th>{managerRole && <th scope="col">Gestión</th>}</tr></thead>
+          <table aria-label="Organization members">
+            <thead><tr><th scope="col">User</th><th scope="col">Role</th><th scope="col">Status</th>{managerRole && <th scope="col">Actions</th>}</tr></thead>
             <tbody>{members.map(member => (
               <tr key={member.id}>
-                <td>{member.userId}</td><td>{member.role}</td>
-                <td><Badge tone={member.status === 'ACTIVE' ? 'positive' : 'muted'}>{member.status}</Badge></td>
+                <td>{member.userId}</td><td>{roleLabels[member.role]}</td>
+                <td><Badge tone={member.status === 'ACTIVE' ? 'positive' : 'muted'}>{statusLabels[member.status]}</Badge></td>
                 {managerRole && (
                   <td>
                     {(member.role !== 'OWNER' || managerRole === 'OWNER') && (
                       <form onSubmit={event => void save(event, member)}>
                         <fieldset disabled={pending} key={`${member.role}/${member.status}`}>
-                          <SelectField label="Rol" name="role" defaultValue={member.role}>
-                            {allowedRoles.map(role => <option key={role}>{role}</option>)}
+                          <SelectField label="Role" name="role" defaultValue={member.role}>
+                            {allowedRoles.map(role => <option key={role} value={role}>{roleLabels[role]}</option>)}
                           </SelectField>
-                          <SelectField label="Estado" name="status" defaultValue={member.status}>
-                            {memberStatuses.map(status => <option key={status}>{status}</option>)}
+                          <SelectField label="Status" name="status" defaultValue={member.status}>
+                            {memberStatuses.map(status => <option key={status} value={status}>{statusLabels[status]}</option>)}
                           </SelectField>
-                          <Button type="submit">Guardar</Button>
+                          <Button type="submit">Save</Button>
                         </fieldset>
                         {result(member.id)}
                       </form>

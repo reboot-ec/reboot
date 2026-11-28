@@ -17,7 +17,7 @@ export function OrganizationsPage() {
 
   return (
     <>
-      <h1>Organizaciones</h1>
+      <h1>Organizations</h1>
       <CreateOrganizationForm />
       <SearchBar onSearch={filters => setQuery(current => ({ ...current, ...filters, page: 0 }))} />
       <ErrorBanner error={error} />
@@ -28,7 +28,7 @@ export function OrganizationsPage() {
             <div className="card-grid">{data.items.map(organization =>
               <OrganizationCard key={organization.id} organization={organization} />
             )}</div>
-          ) : <p>No se encontraron organizaciones.</p>}
+          ) : <p>No organizations found.</p>}
           <Pagination page={data.page} totalPages={data.totalPages}
             onPage={page => setQuery(current => ({ ...current, page }))} />
         </>

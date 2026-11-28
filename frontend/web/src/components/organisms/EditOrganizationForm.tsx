@@ -7,7 +7,7 @@ export function EditOrganizationForm({ organization, onSaved }: { organization: 
 
   return (
     <details className="card">
-      <summary>Editar organización</summary>
+      <summary>Edit organization</summary>
       <OrganizationForm organization={organization} onSave={async input => {
         const changes = Object.fromEntries(
           (Object.keys(input) as (keyof typeof input)[]).flatMap(field => {
