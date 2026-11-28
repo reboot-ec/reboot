@@ -1,0 +1,20 @@
+{
+  "name": "reboot-frontend",
+  "private": true,
+  "workspaces": [
+    "web",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @reboot/web",
+    "build": "npm run typecheck && npm run build --workspace @reboot/web",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "eslint": "^9.39.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.0"
+  }
+}
