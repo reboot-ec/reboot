@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.UUID;
+import java.util.List;
 
 @Service
 public class OrganizationServiceImpl implements OrganizationService {
@@ -62,9 +63,10 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     @Transactional(readOnly = true)
-    public OrganizationPageDto getOrganizations(int page, int pageSize, OrganizationType type, String name) {
+    public OrganizationPageDto getOrganizations(int page, int pageSize, List<OrganizationType> types, String name) {
         String nameFilter = StringUtils.hasText(name) ? name.trim() : null;
-        return toPage(organizationRepository.search(type, nameFilter, pageRequest(page, pageSize)));
+        List<OrganizationType> filter = types == null || types.isEmpty() ? List.of(OrganizationType.values()) : types;
+        return toPage(organizationRepository.search(filter, nameFilter, pageRequest(page, pageSize)));
     }
 
     @Override

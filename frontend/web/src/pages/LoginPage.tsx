@@ -32,7 +32,7 @@ export function LoginPage() {
       } else if ((state?.userId === user.id && state.intent === 'representative') || getProfileIntent(user.id) === 'representative') {
         navigate('/organizations/mine', { replace: true, state: { checkOnboarding: true } });
       } else {
-        navigate('/organizations', { replace: true });
+        navigate('/dashboard', { replace: true });
       }
     } catch (failure) {
       setError(failure);

@@ -26,6 +26,7 @@ export function Navbar() {
     <header className="site-header">
       <nav className="container nav" aria-label="Main navigation">
         <Link className="brand" to="/organizations">REBOOT</Link>
+        {user && <Link to="/dashboard">Home</Link>}
         <Link to="/organizations">Explore Centers &amp; Partners</Link>
         {user ? (
           <>

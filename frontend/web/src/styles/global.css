@@ -84,6 +84,10 @@ fieldset { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; gap: v
 @media (prefers-reduced-motion: reduce) { .spinner::before { animation: none; } }
 
 .table-scroll { overflow-x: auto; }
+.citizen-welcome { padding: clamp(1.5rem, 4vw, 3rem); background: #e6f1eb; }
+.citizen-welcome p { font-size: 1.2rem; color: var(--accent-hover); }
+.citizen-impact dl { margin-block: .75rem 0; }
+.citizen-impact dd { margin: 0; font-size: 1.5rem; font-weight: 700; }
 .directory-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space); }
 .secondary-action {
   display: inline-flex;

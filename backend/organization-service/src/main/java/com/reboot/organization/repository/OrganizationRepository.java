@@ -13,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -28,10 +29,10 @@ public interface OrganizationRepository extends JpaRepository<Organization, UUID
 
     @Query("""
             select organization from Organization organization
-            where (:type is null or organization.organizationType = :type)
+            where organization.organizationType in :types
               and (:name is null or lower(organization.name) like lower(concat('%', cast(:name as string), '%')))
             """)
-    Page<Organization> search(@Param("type") OrganizationType type,
+    Page<Organization> search(@Param("types") List<OrganizationType> types,
                               @Param("name") String name,
                               Pageable pageable);
 

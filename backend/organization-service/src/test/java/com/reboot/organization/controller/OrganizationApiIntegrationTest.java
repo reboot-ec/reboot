@@ -48,6 +48,35 @@ class OrganizationApiIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Test
+    void filtersDirectoryByAnySelectedType() throws Exception {
+        String authorization = bearer(token(UUID.randomUUID()));
+        for (String type : List.of("NGO", "INSTITUTION", "REPAIR_SHOP")) {
+            mockMvc.perform(post("/api/v1/organizations")
+                            .header("Authorization", authorization)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(Map.of(
+                                    "name", "Directory filter " + type, "organizationType", type))))
+                    .andExpect(status().isCreated());
+        }
+
+        mockMvc.perform(get("/api/v1/organizations")
+                        .param("type", "NGO", "INSTITUTION")
+                        .param("name", "Directory filter")
+                        .param("pageSize", "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.totalElements").value(2))
+                .andExpect(jsonPath("$.data.totalPages").value(2))
+                .andExpect(jsonPath("$.data.items[0].organizationType").value("INSTITUTION"));
+
+        mockMvc.perform(get("/api/v1/organizations")
+                        .param("type", "REPAIR_SHOP")
+                        .param("name", "Directory filter"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.totalElements").value(1))
+                .andExpect(jsonPath("$.data.items[0].organizationType").value("REPAIR_SHOP"));
+    }
+
+    @Test
     void completesOrganizationAndMembershipFlowAndRejectsUnauthorizedRequests() throws Exception {
         UUID ownerId = UUID.randomUUID();
         UUID memberId = UUID.randomUUID();

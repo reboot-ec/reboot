@@ -11,6 +11,7 @@ import { OrganizationsPage } from './pages/OrganizationsPage';
 import { OrganizationDetailPage } from './pages/OrganizationDetailPage';
 import { CreateOrganizationPage } from './pages/CreateOrganizationPage';
 import { MyOrganizationsPage } from './pages/MyOrganizationsPage';
+import { CitizenDashboardPage } from './pages/CitizenDashboardPage';
 import './styles/global.css';
 
 createRoot(document.getElementById('root')!).render(
@@ -25,6 +26,7 @@ createRoot(document.getElementById('root')!).render(
           </Route>
           <Route element={<DashboardLayout />}>
             <Route element={<ProtectedRoute />}>
+              <Route path="/dashboard" element={<CitizenDashboardPage />} />
               <Route path="/organizations" element={<OrganizationsPage />} />
               <Route path="/organizations/new" element={<CreateOrganizationPage />} />
               <Route path="/organizations/mine" element={<MyOrganizationsPage />} />
