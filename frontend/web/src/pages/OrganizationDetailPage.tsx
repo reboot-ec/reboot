@@ -9,7 +9,7 @@ import { useOrganizations } from '../context/useOrganizations';
 import { useApiQuery } from '../hooks/useApiQuery';
 
 function OrganizationDetail({ id }: { id: string }) {
-  const { user, profileType } = useAuth();
+  const { user, profileType, organizationId, refreshOrganization } = useAuth();
   const service = useOrganizations();
   const load = useCallback((signal: AbortSignal) => service.get(id, signal), [service, id]);
   const organization = useApiQuery(load);
@@ -23,7 +23,10 @@ function OrganizationDetail({ id }: { id: string }) {
       {data && <OrganizationProfile organization={data} />}
       {data && user && profileType === 'ORG_REPRESENTATIVE' && (
         <OrganizationManagement key={user.id} organization={data} user={user}
-          onSaved={saved => organization.updateData(() => saved)} />
+          onSaved={saved => {
+            organization.updateData(() => saved);
+            if (saved.id === organizationId && saved.status !== data.status) refreshOrganization();
+          }} />
       )}
     </>
   );

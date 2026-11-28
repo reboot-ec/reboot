@@ -5,7 +5,7 @@ import { Button } from '../atoms/Button';
 import { ErrorBanner } from '../molecules/ErrorBanner';
 
 export function Navbar() {
-  const { user, logout, loading, profileType, organizationId, organizationPending, organizationError } = useAuth();
+  const { user, logout, loading, profileType, organizationId, organizationStatus, organizationPending, organizationError } = useAuth();
   const representative = profileType === 'ORG_REPRESENTATIVE';
   const { pathname, search } = useLocation();
   const [pending, setPending] = useState(false);
@@ -30,7 +30,9 @@ export function Navbar() {
         {profileType === 'CITIZEN' && <Link to="/dashboard">Home</Link>}
         {representative && !organizationPending && !organizationError && (
           organizationId
-            ? <Link to={`/organizations/${organizationId}`}>My Organization</Link>
+            ? organizationStatus === 'ACTIVE'
+              ? <Link to="/org-dashboard">Organization Hub</Link>
+              : <Link to={`/organizations/${organizationId}`}>My Organization</Link>
             : <Link to="/organizations/new">Register Organization</Link>
         )}
         <Link to="/organizations">{representative ? 'Explore Network' : 'Explore Centers'}</Link>

@@ -4,11 +4,12 @@ import { ErrorBanner } from '../components/molecules/ErrorBanner';
 import { useAuth } from '../context/AuthContext';
 
 export function MyOrganizationsPage() {
-  const { profileType, organizationId, organizationPending, organizationError } = useAuth();
+  const { profileType, organizationId, organizationStatus, organizationPending, organizationError } = useAuth();
 
   if (profileType !== 'ORG_REPRESENTATIVE') return <Navigate replace to="/dashboard" />;
   if (organizationPending) return <Spinner />;
   if (organizationError) return <ErrorBanner error={organizationError} />;
 
-  return <Navigate replace to={organizationId ? `/organizations/${organizationId}` : '/organizations/new'} />;
+  if (!organizationId) return <Navigate replace to="/organizations/new" />;
+  return <Navigate replace to={organizationStatus === 'ACTIVE' ? '/org-dashboard' : `/organizations/${organizationId}`} />;
 }

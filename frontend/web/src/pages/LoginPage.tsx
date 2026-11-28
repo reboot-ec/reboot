@@ -26,7 +26,7 @@ export function LoginPage() {
         authProvider: form.get('authProvider') === 'ACTIVE_DIRECTORY' ? 'ACTIVE_DIRECTORY' : 'LOCAL',
       }, state);
       const from: unknown = state?.from;
-      if (typeof from === 'string' && /^\/organizations\/[^/\\]/.test(from)) {
+      if (typeof from === 'string' && /^\/organizations\/[\da-f-]{36}(?:[?#]|$)/i.test(from)) {
         navigate(from, { replace: true });
       } else {
         navigate('/organizations/mine', { replace: true });

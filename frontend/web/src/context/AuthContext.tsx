@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import type { AuthTokens, LoginCredentials, User } from '@reboot/shared-types';
+import type { AuthTokens, LoginCredentials, Organization, User } from '@reboot/shared-types';
 import { organizationService } from '@reboot/api-client';
 import { getProfileType } from './profileIntent';
 import type { ProfileIntent, ProfileType } from './profileIntent';
@@ -13,6 +13,7 @@ interface AuthContextValue {
   login: (credentials: LoginCredentials, registration?: { userId: string; intent: ProfileIntent }) => Promise<void>;
   profileType: ProfileType | null;
   organizationId: string | null;
+  organizationStatus: Organization['status'] | null;
   organizationPending: boolean;
   organizationError: unknown;
   refreshOrganization: () => void;
@@ -56,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profileType, setProfileType] = useState<ProfileType | null>(null);
   const [organizationVersion, setOrganizationVersion] = useState(0);
-  const [organization, setOrganization] = useState<{ userId: string; version: number; id: string | null; error?: unknown }>();
+  const [organization, setOrganization] = useState<{ userId: string; version: number; data?: Organization; error?: unknown }>();
   const [loading, setLoading] = useState(Boolean(initialSession));
   const [sessionError, setSessionError] = useState<unknown>(null);
 
@@ -154,10 +155,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const service = organizationService({ request });
     service.listMine(0, 1, controller.signal).then(
       result => {
-        if (!controller.signal.aborted) setOrganization({ userId: representativeId, version: organizationVersion, id: result.items[0]?.id ?? null });
+        if (!controller.signal.aborted) setOrganization({ userId: representativeId, version: organizationVersion, data: result.items[0] });
       },
       error => {
-        if (!controller.signal.aborted) setOrganization({ userId: representativeId, version: organizationVersion, id: null, error });
+        if (!controller.signal.aborted) setOrganization({ userId: representativeId, version: organizationVersion, error });
       },
     );
     return () => controller.abort();
@@ -178,7 +179,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return <AuthContext.Provider value={{
     user, loading, sessionError, login, logout, request, profileType,
-    organizationId: currentOrganization?.id ?? null,
+    organizationId: currentOrganization?.data?.id ?? null,
+    organizationStatus: currentOrganization?.data?.status ?? null,
     organizationPending: Boolean(representativeId && !currentOrganization),
     organizationError: currentOrganization?.error,
     refreshOrganization: () => setOrganizationVersion(version => version + 1),

@@ -11,6 +11,6 @@ export function CreateOrganizationForm() {
   return <OrganizationForm onSave={async input => {
     const organization = await service.create(input);
     refreshOrganization();
-    navigate(`/organizations/${organization.id}`, { replace: true });
+    navigate(organization.status === 'ACTIVE' ? '/org-dashboard' : `/organizations/${organization.id}`, { replace: true });
   }} />;
 }

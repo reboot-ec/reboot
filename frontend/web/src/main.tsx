@@ -12,6 +12,7 @@ import { OrganizationDetailPage } from './pages/OrganizationDetailPage';
 import { CreateOrganizationPage } from './pages/CreateOrganizationPage';
 import { MyOrganizationsPage } from './pages/MyOrganizationsPage';
 import { CitizenDashboardPage } from './pages/CitizenDashboardPage';
+import { OrganizationDashboardPage } from './pages/OrganizationDashboardPage';
 import './styles/global.css';
 
 createRoot(document.getElementById('root')!).render(
@@ -27,6 +28,7 @@ createRoot(document.getElementById('root')!).render(
           <Route element={<DashboardLayout />}>
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<CitizenDashboardPage />} />
+              <Route path="/org-dashboard" element={<OrganizationDashboardPage />} />
               <Route path="/organizations" element={<OrganizationsPage />} />
               <Route path="/organizations/new" element={<CreateOrganizationPage />} />
               <Route path="/organizations/mine" element={<MyOrganizationsPage />} />
