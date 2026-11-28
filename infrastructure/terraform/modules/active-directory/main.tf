@@ -45,7 +45,7 @@ resource "aws_directory_service_directory" "main" {
   name     = var.directory_name
   password = var.directory_password
   edition  = "Standard"
-  type     = "SimpleAD"
+  type     = "MicrosoftAD"
   size     = "Small"
 
   vpc_settings {
