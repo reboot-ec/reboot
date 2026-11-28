@@ -1,5 +1,6 @@
 package com.reboot.identity.dto;
 
+import com.reboot.identity.model.AuthProvider;
 import com.reboot.identity.model.ClientType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -27,6 +28,9 @@ public class LoginRequestDto {
 
     @NotNull
     private ClientType clientType = ClientType.WEB;
+
+    @Schema(description = "Authentication provider. Omit for automatic provider selection.")
+    private AuthProvider authProvider;
 
     @Size(max = 255)
     private String deviceInfo;

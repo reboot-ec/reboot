@@ -119,15 +119,20 @@ public class IdentityAuthService {
         String identifier = request.getUsernameOrEmail().trim();
         Optional<User> storedUser = userRepository.findByUsername(identifier)
                 .or(() -> userRepository.findByEmail(identifier.toLowerCase()));
+        boolean localAccount = storedUser.filter(account -> account.getAuthProvider() == AuthProvider.LOCAL).isPresent();
+        AuthProvider requestedProvider = request.getAuthProvider();
 
         User user;
-        if (storedUser.isPresent() && storedUser.get().getAuthProvider() == AuthProvider.LOCAL) {
-            user = storedUser.get();
+        if (requestedProvider == AuthProvider.LOCAL || (requestedProvider == null && localAccount)) {
+            if (!localAccount) {
+                rejectCredentials();
+            }
+            user = storedUser.orElseThrow();
             if (user.getPasswordHash() == null
                     || !passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
                 rejectCredentials();
             }
-        } else if (adEnabled) {
+        } else if (adEnabled && !localAccount) {
             try {
                 user = directoryAuthenticator.authenticateAndSynchronize(identifier, request.getPassword());
             } catch (BadCredentialsException exception) {

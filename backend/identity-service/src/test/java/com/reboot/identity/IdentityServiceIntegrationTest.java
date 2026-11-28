@@ -129,6 +129,7 @@ class IdentityServiceIntegrationTest {
                   "usernameOrEmail": "jsoto",
                   "password": "directory-password",
                   "clientType": "WEB",
+                  "authProvider": "ACTIVE_DIRECTORY",
                   "deviceInfo": "integration-test"
                 }
                 """;
@@ -157,6 +158,19 @@ class IdentityServiceIntegrationTest {
                 .andExpect(jsonPath("$.data.username").value("jsoto"))
                 .andExpect(jsonPath("$.data.roles[0]").value("REBOOT"))
                 .andExpect(jsonPath("$.meta.requestId").isNotEmpty());
+    }
+
+    @Test
+    void rejectsDirectoryCredentialsWhenLocalProviderIsSelected() throws Exception {
+        mockMvc.perform(post("/api/v1/identity/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"usernameOrEmail":"jsoto","password":"directory-password",
+                                 "clientType":"WEB","authProvider":"LOCAL"}
+                                """))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error.code").value("INVALID_CREDENTIALS"))
+                .andExpect(jsonPath("$.error.requestId").isNotEmpty());
     }
 
     @Test
