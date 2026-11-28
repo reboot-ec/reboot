@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
 import java.util.HashSet;
@@ -34,17 +36,17 @@ public class User {
     @Column(name = "full_name", nullable = false)
     private String fullName;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "auth_provider", nullable = false)
-    private AuthProvider authProvider = AuthProvider.LOCAL;
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "auth_provider", columnDefinition = "auth_provider_enum", nullable = false)
+    private AuthProvider authProvider;
 
     @Column(name = "password_hash")
     private String passwordHash;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "status", columnDefinition = "user_status_enum", nullable = false)
     private UserStatus status = UserStatus.ACTIVE;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -71,6 +73,9 @@ public class User {
     private void normalizeEmail() {
         if (this.email != null) {
             this.email = this.email.trim().toLowerCase();
+        }
+        if (this.status == null) {
+            this.status = UserStatus.ACTIVE;
         }
     }
 
