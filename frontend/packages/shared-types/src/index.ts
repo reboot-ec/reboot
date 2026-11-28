@@ -1,9 +1,11 @@
+export type AuthProvider = 'LOCAL' | 'ACTIVE_DIRECTORY';
+
 export interface User {
   id: string;
   email: string;
   username: string;
   fullName: string;
-  authProvider: 'LOCAL' | 'ACTIVE_DIRECTORY';
+  authProvider: AuthProvider;
   status: 'ACTIVE' | 'INACTIVE' | 'LOCKED';
   roles: string[];
   createdAt: string;
@@ -13,6 +15,23 @@ export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
   expiresIn: number;
+}
+
+export interface AuthSession extends AuthTokens {
+  user: User;
+}
+
+export interface LoginCredentials {
+  usernameOrEmail: string;
+  password: string;
+  authProvider: AuthProvider;
+}
+
+export interface Registration {
+  email: string;
+  username: string;
+  fullName: string;
+  password: string;
 }
 
 export interface Organization {

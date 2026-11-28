@@ -9,6 +9,7 @@ export interface ApiEnvironment {
 interface RequestOptions extends Omit<RequestInit, 'body' | 'redirect'> {
   json?: unknown;
   authenticated?: boolean;
+  retryUnauthorized?: boolean;
 }
 
 const refreshPath = '/api/v1/identity/refresh';
@@ -54,7 +55,7 @@ export function createApiClient(environment: ApiEnvironment = {}) {
     return url.href.replace(/\/+$/, '') + path;
   }
 
-  async function send(path: string, options: Omit<RequestOptions, 'authenticated'>, accessToken?: string) {
+  async function send(path: string, options: Omit<RequestOptions, 'authenticated' | 'retryUnauthorized'>, accessToken?: string) {
     const { json, ...init } = options;
     const headers = new Headers(init.headers);
     const requestId = crypto.randomUUID();
@@ -99,24 +100,29 @@ export function createApiClient(environment: ApiEnvironment = {}) {
         throw await readError(response, requestId);
       }
 
-      const { data }: ApiResponse<AuthTokens> = await response.json();
-      if (session === expectedSession) tokens = data;
+      const { data: { accessToken, refreshToken: rotatedToken, expiresIn } }: ApiResponse<AuthTokens> = await response.json();
+      if (session === expectedSession) tokens = { accessToken, refreshToken: rotatedToken, expiresIn };
     })().finally(() => {
       if (session === expectedSession) renewal = undefined;
     });
     return renewal;
   }
 
-  async function request<T>(path: string, { authenticated = true, ...options }: RequestOptions = {}): Promise<ApiResponse<T> | undefined> {
+  async function refresh() {
+    if (tokens) await renew(session, tokens.refreshToken);
+  }
+
+  async function request<T>(path: string, { authenticated = true, retryUnauthorized = true, ...options }: RequestOptions = {}): Promise<ApiResponse<T> | undefined> {
     const expectedSession = session;
     const auth = authenticated && path.split('?')[0] !== refreshPath;
     const initialTokens = auth ? tokens : null;
     let result = await send(path, options, initialTokens?.accessToken);
-    if (result.response.status === 401 && initialTokens && session === expectedSession) {
+    if (retryUnauthorized && result.response.status === 401 && initialTokens && session === expectedSession) {
       options.signal?.throwIfAborted();
       if (tokens === initialTokens) await renew(expectedSession, initialTokens.refreshToken);
       if (session === expectedSession && tokens) {
         result = await send(path, options, tokens.accessToken);
+        if (result.response.status === 401 && session === expectedSession) setTokens(null);
       }
     }
 
@@ -125,5 +131,7 @@ export function createApiClient(environment: ApiEnvironment = {}) {
     return result.response.json();
   }
 
-  return { request, setTokens, getTokens: () => tokens };
+  return { request, refresh, setTokens, getTokens: () => tokens, pendingRefresh: () => renewal };
 }
+
+export { authService } from './authService.ts';
