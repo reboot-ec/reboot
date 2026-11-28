@@ -20,7 +20,11 @@
 | `/login` | `LoginPage` |
 | `/register` | `RegisterPage` |
 | `/organizations` | `OrganizationsPage` |
+| `/organizations/new` | `CreateOrganizationPage` |
+| `/organizations/mine` | `MyOrganizationsPage` |
 | `/organizations/:id` | `OrganizationDetailPage` |
+
+Registration saves the selected profile intent for that user in the browser. Citizens start in the directory. Representatives start in My Organizations and are redirected to the registration form if they have no active memberships. My Organizations reads the authenticated `GET /api/v1/organizations/mine` endpoint.
 
 ## Environments
 

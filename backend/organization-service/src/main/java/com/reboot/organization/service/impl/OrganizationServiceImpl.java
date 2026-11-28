@@ -63,14 +63,26 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     @Transactional(readOnly = true)
     public OrganizationPageDto getOrganizations(int page, int pageSize, OrganizationType type, String name) {
+        String nameFilter = StringUtils.hasText(name) ? name.trim() : null;
+        return toPage(organizationRepository.search(type, nameFilter, pageRequest(page, pageSize)));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OrganizationPageDto getMyOrganizations(UUID userId, int page, int pageSize) {
+        return toPage(organizationRepository.findForMember(userId, MembershipStatus.ACTIVE, pageRequest(page, pageSize)));
+    }
+
+    private PageRequest pageRequest(int page, int pageSize) {
         if (page < 0 || pageSize < 1 || pageSize > MAX_PAGE_SIZE) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_PAGINATION",
                     "Page must be non-negative and pageSize must be between 1 and 100.");
         }
 
-        String nameFilter = StringUtils.hasText(name) ? name.trim() : null;
-        Page<Organization> result = organizationRepository.search(
-                type, nameFilter, PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "name")));
+        return PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "name"));
+    }
+
+    private OrganizationPageDto toPage(Page<Organization> result) {
         return new OrganizationPageDto(
                 result.getContent().stream().map(organizationMapper::toDto).toList(),
                 result.getNumber(),

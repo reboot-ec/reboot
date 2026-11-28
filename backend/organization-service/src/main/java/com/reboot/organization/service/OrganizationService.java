@@ -14,6 +14,8 @@ public interface OrganizationService {
 
     OrganizationPageDto getOrganizations(int page, int pageSize, OrganizationType type, String name);
 
+    OrganizationPageDto getMyOrganizations(UUID userId, int page, int pageSize);
+
     OrganizationResponseDto getOrganization(UUID organizationId);
 
     OrganizationResponseDto update(UUID organizationId,

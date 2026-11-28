@@ -68,6 +68,13 @@ class OrganizationApiIntegrationTest {
         JsonNode created = objectMapper.readTree(createResult.getResponse().getContentAsString());
         String organizationId = created.path("data").path("id").asText();
 
+        mockMvc.perform(get("/api/v1/organizations/mine"))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(get("/api/v1/organizations/mine").header("Authorization", bearer(ownerToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.totalElements").value(1))
+                .andExpect(jsonPath("$.data.items[0].id").value(organizationId));
+
         mockMvc.perform(get("/api/v1/organizations/{organizationId}", organizationId)
                         .header("Authorization", bearer(ownerToken)))
                 .andExpect(status().isOk())
@@ -82,6 +89,9 @@ class OrganizationApiIntegrationTest {
                 .andExpect(jsonPath("$.data.description").value("Updated by owner"));
 
         String memberIdFromResponse = invite(organizationId, ownerToken, memberId);
+        mockMvc.perform(get("/api/v1/organizations/mine").header("Authorization", bearer(memberToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.totalElements").value(0));
         mockMvc.perform(patch("/api/v1/organizations/{organizationId}/members/{memberId}",
                                 organizationId, memberIdFromResponse)
                         .header("Authorization", bearer(ownerToken))
@@ -89,6 +99,9 @@ class OrganizationApiIntegrationTest {
                         .content(objectMapper.writeValueAsString(Map.of("status", "ACTIVE"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.status").value("ACTIVE"));
+        mockMvc.perform(get("/api/v1/organizations/mine").header("Authorization", bearer(memberToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.items[0].id").value(organizationId));
 
         String adminMemberIdFromResponse = invite(organizationId, ownerToken, adminMemberId);
         mockMvc.perform(patch("/api/v1/organizations/{organizationId}/members/{memberId}",

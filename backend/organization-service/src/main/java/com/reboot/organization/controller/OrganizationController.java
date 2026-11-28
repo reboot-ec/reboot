@@ -84,6 +84,21 @@ public class OrganizationController {
         return success(organizationService.getOrganizations(page, pageSize, type, name));
     }
 
+    @GetMapping("/mine")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "List organizations where the signed-in user has an active membership")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Organizations returned"),
+            @ApiResponse(responseCode = "400", description = "Invalid pagination"),
+            @ApiResponse(responseCode = "401", description = "Authentication required")
+    })
+    public ApiResponseDto<OrganizationPageDto> getMyOrganizations(
+            @AuthenticationPrincipal JwtPrincipal principal,
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "20") @Min(1) @Max(100) int pageSize) {
+        return success(organizationService.getMyOrganizations(principal.userId(), page, pageSize));
+    }
+
     @GetMapping("/{organizationId}")
     @Operation(summary = "Get organization details")
     @ApiResponses({

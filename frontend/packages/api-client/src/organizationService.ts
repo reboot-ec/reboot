@@ -43,6 +43,10 @@ export function organizationService({ request }: Pick<ReturnType<typeof createAp
     create(json: OrganizationInput) {
       return data(request<Organization>(base, { method: 'POST', json }));
     },
+    listMine(page = 0, pageSize = 20, signal?: AbortSignal) {
+      const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+      return data(request<OrganizationPage>(`${base}/mine?${params}`, { signal }));
+    },
     get(id: string, signal?: AbortSignal) {
       return data(request<Organization>(organization(id), { signal }));
     },

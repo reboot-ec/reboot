@@ -9,6 +9,8 @@ import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { OrganizationsPage } from './pages/OrganizationsPage';
 import { OrganizationDetailPage } from './pages/OrganizationDetailPage';
+import { CreateOrganizationPage } from './pages/CreateOrganizationPage';
+import { MyOrganizationsPage } from './pages/MyOrganizationsPage';
 import './styles/global.css';
 
 createRoot(document.getElementById('root')!).render(
@@ -24,6 +26,8 @@ createRoot(document.getElementById('root')!).render(
           <Route element={<ProtectedRoute />}>
             <Route element={<DashboardLayout />}>
               <Route path="/organizations" element={<OrganizationsPage />} />
+              <Route path="/organizations/new" element={<CreateOrganizationPage />} />
+              <Route path="/organizations/mine" element={<MyOrganizationsPage />} />
               <Route path="/organizations/:id" element={<OrganizationDetailPage />} />
             </Route>
           </Route>

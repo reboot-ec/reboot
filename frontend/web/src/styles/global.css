@@ -84,6 +84,22 @@ fieldset { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; gap: v
 @media (prefers-reduced-motion: reduce) { .spinner::before { animation: none; } }
 
 .table-scroll { overflow-x: auto; }
+.directory-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space); }
+.secondary-action {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: .55rem .8rem;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) / 2);
+  background: var(--surface);
+  text-decoration: none;
+}
+.secondary-action:hover { border-color: var(--accent); }
+.profile-intent legend { font-weight: 600; margin-bottom: .5rem; }
+.profile-intent label { display: flex; align-items: flex-start; gap: .75rem; padding: .75rem; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; }
+.profile-intent input { width: auto; min-height: 0; margin: .25rem 0 0; accent-color: var(--accent); }
+.profile-intent small { display: block; color: var(--muted); }
 .badges { display: flex; flex-wrap: wrap; gap: .5rem; }
 .badge--positive { color: var(--accent-hover); background: #d6efdf; }
 .badge--muted { color: var(--muted); background: #edf0ee; }

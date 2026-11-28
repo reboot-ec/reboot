@@ -2,6 +2,7 @@ package com.reboot.organization.repository;
 
 import com.reboot.organization.model.Organization;
 import com.reboot.organization.model.OrganizationType;
+import com.reboot.organization.model.MembershipStatus;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +34,18 @@ public interface OrganizationRepository extends JpaRepository<Organization, UUID
     Page<Organization> search(@Param("type") OrganizationType type,
                               @Param("name") String name,
                               Pageable pageable);
+
+    @Query("""
+            select organization from Organization organization
+            where exists (
+                select membership.id from OrganizationMembership membership
+                where membership.organization = organization
+                  and membership.userId = :userId and membership.status = :status
+            )
+            """)
+    Page<Organization> findForMember(@Param("userId") UUID userId,
+                                     @Param("status") MembershipStatus status,
+                                     Pageable pageable);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select organization from Organization organization where organization.id = :id")

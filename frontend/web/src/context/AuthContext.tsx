@@ -7,7 +7,7 @@ interface AuthContextValue {
   user: User | null;
   loading: boolean;
   sessionError: unknown;
-  login: (credentials: LoginCredentials) => Promise<void>;
+  login: (credentials: LoginCredentials) => Promise<User>;
   logout: () => Promise<void>;
   request: typeof api.request;
 }
@@ -115,6 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSessionError(null);
     syncSession();
     setUser(profile);
+    return profile;
   }
 
   const request = useCallback(async <T,>(...args: Parameters<typeof api.request>) => {

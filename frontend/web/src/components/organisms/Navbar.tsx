@@ -25,7 +25,8 @@ export function Navbar() {
     <header className="site-header">
       <nav className="container nav" aria-label="Main navigation">
         <Link className="brand" to="/organizations">REBOOT</Link>
-        <Link to="/organizations">Organizations</Link>
+        <Link to="/organizations">Explore Centers &amp; Partners</Link>
+        <Link to="/organizations/mine">My Organizations</Link>
         {user && <span className="nav-user">{user.fullName} <small>{user.email}</small></span>}
         <Button disabled={pending} onClick={signOut}>Sign out</Button>
       </nav>
