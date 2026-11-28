@@ -24,7 +24,7 @@ createRoot(document.getElementById('root')!).render(
           <Route element={<ProtectedRoute />}>
             <Route element={<DashboardLayout />}>
               <Route path="/organizations" element={<OrganizationsPage />} />
-              <Route path="/organizations/:organizationId" element={<OrganizationDetailPage />} />
+              <Route path="/organizations/:id" element={<OrganizationDetailPage />} />
             </Route>
           </Route>
           <Route path="*" element={<main className="container dashboard"><h1>Página no encontrada</h1><Link to="/">Volver al inicio</Link></main>} />

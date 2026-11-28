@@ -135,3 +135,5 @@ export function createApiClient(environment: ApiEnvironment = {}) {
 }
 
 export { authService } from './authService.ts';
+export { organizationService } from './organizationService.ts';
+export type { OrganizationInput, OrganizationPatch, OrganizationQuery, MemberInput, MemberPatch } from './organizationService.ts';

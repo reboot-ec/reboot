@@ -7,7 +7,10 @@ export function OrganizationCard({ organization }: { organization: Organization 
   return (
     <article className="card">
       <CardHeader title={<Link to={`/organizations/${organization.id}`}>{organization.name}</Link>}>
-        <Badge>{organization.status}</Badge>
+        <div className="badges">
+          <Badge>{organization.organizationType}</Badge>
+          <Badge tone={organization.status === 'ACTIVE' ? 'positive' : 'muted'}>{organization.status}</Badge>
+        </div>
       </CardHeader>
       {organization.description && <p>{organization.description}</p>}
     </article>

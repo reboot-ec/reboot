@@ -1,22 +1,28 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from '../context/AuthContext';
 
-export function useApiQuery<T>(path: string): { data?: T; error?: unknown; pending: boolean } {
-  const { request } = useAuth();
-  const [result, setResult] = useState<{ path: string; data?: T; error?: unknown }>();
+export function useApiQuery<T>(load: (signal: AbortSignal) => Promise<T>) {
+  const [version, setVersion] = useState(0);
+  const [result, setResult] = useState<{ load: typeof load; version: number; data?: T; error?: unknown }>();
+  const current = result?.load === load && result.version === version ? result : undefined;
 
   useEffect(() => {
     const controller = new AbortController();
-    request<T>(path, { signal: controller.signal }).then(
-      response => {
-        if (!controller.signal.aborted) setResult({ path, data: response?.data });
+    load(controller.signal).then(
+      data => {
+        if (!controller.signal.aborted) setResult({ load, version, data });
       },
       error => {
-        if (!controller.signal.aborted) setResult({ path, error });
+        if (!controller.signal.aborted) setResult({ load, version, error });
       },
     );
     return () => controller.abort();
-  }, [path, request]);
+  }, [load, version]);
 
-  return result?.path === path ? { ...result, pending: false } : { pending: true };
+  function updateData(update: (value: T) => T) {
+    setResult(previous => previous?.load === load && previous.version === version && previous.data !== undefined
+      ? { load, version, data: update(previous.data) }
+      : previous);
+  }
+
+  return { data: current?.data, error: current?.error, pending: !current, updateData, reload: () => setVersion(value => value + 1) };
 }

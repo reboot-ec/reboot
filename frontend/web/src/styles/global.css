@@ -84,5 +84,18 @@ fieldset { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; gap: v
 @media (prefers-reduced-motion: reduce) { .spinner::before { animation: none; } }
 
 .table-scroll { overflow-x: auto; }
+.badges { display: flex; flex-wrap: wrap; gap: .5rem; }
+.badge--positive { color: var(--accent-hover); background: #d6efdf; }
+.badge--muted { color: var(--muted); background: #edf0ee; }
+.management-form { display: grid; gap: var(--space); margin-block-start: var(--space); }
+.management-form fieldset { grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr)); }
+.management-form button { align-self: end; }
+.card summary { cursor: pointer; font-weight: 650; }
+.organization-info { display: grid; gap: .25rem; margin: 0; }
+.organization-info dt { font-weight: 600; }
+.organization-info dd { margin: 0 0 .5rem; }
+.table-scroll fieldset { grid-template-columns: repeat(2, minmax(7rem, 1fr)); }
+.table-scroll .alert { white-space: normal; }
+select[aria-invalid="true"] { border-color: var(--danger); }
 table { width: 100%; border-collapse: collapse; text-align: left; }
 th, td { padding: .65rem; border-bottom: 1px solid var(--border); white-space: nowrap; }

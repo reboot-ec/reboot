@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
 
-export function Badge({ children }: { children: ReactNode }) {
-  return <span className="badge">{children}</span>;
+export function Badge({ children, tone = 'neutral' }: { children: ReactNode; tone?: 'neutral' | 'positive' | 'muted' }) {
+  return <span className={`badge badge--${tone}`}>{children}</span>;
 }
