@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -25,9 +27,9 @@ public class RefreshSession {
     @Column(name = "token_hash", nullable = false, unique = true)
     private String tokenHash;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "client_type", nullable = false)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "client_type", columnDefinition = "client_type_enum", nullable = false)
     private ClientType clientType = ClientType.WEB;
 
     @Column(name = "device_info")

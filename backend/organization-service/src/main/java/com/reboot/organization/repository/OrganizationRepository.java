@@ -28,7 +28,7 @@ public interface OrganizationRepository extends JpaRepository<Organization, UUID
     @Query("""
             select organization from Organization organization
             where (:type is null or organization.organizationType = :type)
-              and (:name is null or lower(organization.name) like lower(concat('%', :name, '%')))
+              and (:name is null or lower(organization.name) like lower(concat('%', cast(:name as string), '%')))
             """)
     Page<Organization> search(@Param("type") OrganizationType type,
                               @Param("name") String name,
