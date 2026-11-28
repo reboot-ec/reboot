@@ -7,7 +7,7 @@ import { ErrorBanner } from '../components/molecules/ErrorBanner';
 import { Pagination } from '../components/molecules/Pagination';
 import { SearchBar } from '../components/molecules/SearchBar';
 import { OrganizationCard } from '../components/organisms/OrganizationCard';
-import { useApiQuery } from './useApiQuery';
+import { useApiQuery } from '../hooks/useApiQuery';
 
 export function OrganizationsPage() {
   const [query, setQuery] = useState<OrganizationQuery>({ page: 0, pageSize: 20 });

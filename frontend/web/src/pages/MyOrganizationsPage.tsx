@@ -5,7 +5,7 @@ import { Spinner } from '../components/atoms/Spinner';
 import { ErrorBanner } from '../components/molecules/ErrorBanner';
 import { Pagination } from '../components/molecules/Pagination';
 import { OrganizationCard } from '../components/organisms/OrganizationCard';
-import { useApiQuery } from './useApiQuery';
+import { useApiQuery } from '../hooks/useApiQuery';
 
 export function MyOrganizationsPage() {
   const { state } = useLocation();

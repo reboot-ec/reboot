@@ -48,7 +48,7 @@ export function organizationService({ request }: Pick<ReturnType<typeof createAp
       return data(request<OrganizationPage>(`${base}/mine?${params}`, { signal }));
     },
     get(id: string, signal?: AbortSignal) {
-      return data(request<Organization>(organization(id), { signal }));
+      return data(request<Organization>(organization(id), { signal, authenticated: false }));
     },
     update(id: string, json: OrganizationPatch) {
       return data(request<Organization>(organization(id), { method: 'PATCH', json }));

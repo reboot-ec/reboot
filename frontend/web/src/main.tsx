@@ -23,13 +23,13 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
           </Route>
-          <Route element={<ProtectedRoute />}>
-            <Route element={<DashboardLayout />}>
+          <Route element={<DashboardLayout />}>
+            <Route element={<ProtectedRoute />}>
               <Route path="/organizations" element={<OrganizationsPage />} />
               <Route path="/organizations/new" element={<CreateOrganizationPage />} />
               <Route path="/organizations/mine" element={<MyOrganizationsPage />} />
-              <Route path="/organizations/:id" element={<OrganizationDetailPage />} />
             </Route>
+            <Route path="/organizations/:id" element={<OrganizationDetailPage />} />
           </Route>
           <Route path="*" element={<main className="container dashboard"><h1>Page not found</h1><Link to="/">Back to home</Link></main>} />
         </Routes>
