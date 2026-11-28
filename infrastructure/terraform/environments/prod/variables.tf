@@ -126,3 +126,15 @@ variable "jwt_secret" {
   type        = string
   sensitive   = true
 }
+
+variable "n8n_db_password" {
+  description = "Password for the dedicated n8n PostgreSQL role."
+  type        = string
+  sensitive   = true
+}
+
+variable "n8n_encryption_key" {
+  description = "Persistent encryption key for n8n credentials."
+  type        = string
+  sensitive   = true
+}

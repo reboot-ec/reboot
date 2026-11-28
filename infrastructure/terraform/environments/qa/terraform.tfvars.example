@@ -49,3 +49,7 @@ cors_allowed_origins = [
   "https://desktop.example.com",
   "https://mobile.example.com"
 ]
+
+# Provide these secrets via TF_VAR_n8n_db_password and TF_VAR_n8n_encryption_key.
+# n8n_db_password    = "<set outside version control>"
+# n8n_encryption_key = "<set outside version control>"

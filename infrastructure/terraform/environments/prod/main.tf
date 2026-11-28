@@ -333,3 +333,12 @@ module "ecs_services" {
   ad_bind_dn           = "CN=Administrator,CN=Users,${join(",", [for label in split(".", var.directory_name) : "DC=${label}"])}"
   cors_allowed_origins = var.cors_allowed_origins
 }
+
+module "n8n" {
+  source = "../../modules/n8n"
+
+  vpc_id             = module.networking.vpc_id
+  public_subnet_id   = module.networking.public_subnet_ids[0]
+  n8n_db_password    = var.n8n_db_password
+  n8n_encryption_key = var.n8n_encryption_key
+}

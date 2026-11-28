@@ -71,3 +71,13 @@ output "organization_ecr_repository_url" {
   description = "URL of the Organization ECR repository."
   value       = module.ecs_services.organization_ecr_repository_url
 }
+
+output "n8n_url" {
+  description = "HTTP URL of the n8n instance."
+  value       = module.n8n.n8n_url
+}
+
+output "n8n_public_ip" {
+  description = "Public IPv4 address of the n8n instance."
+  value       = module.n8n.n8n_public_ip
+}
